@@ -1,0 +1,991 @@
+const WORLD_RANGE = 5.6;
+const GRID_LIMIT = 5;
+const EPSILON = 1e-8;
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+const presets = [
+  {
+    id: "two-real",
+    label: "Two real directions",
+    matrix: { a: 3, b: 1, c: 0, d: 2 },
+    vector: { x: 2.2, y: 1.4 },
+    prompt:
+      "Most directions drift away from their span. Try dragging until the orange image lands back on the gold guide.",
+  },
+  {
+    id: "flip",
+    label: "Flip through origin",
+    matrix: { a: 1, b: 2, c: 0, d: -1 },
+    vector: { x: 1.8, y: -1.2 },
+    prompt:
+      "One invariant direction keeps orientation, another reverses through the origin. Watch the sign of the scale factor.",
+  },
+  {
+    id: "shear",
+    label: "Single eigenline",
+    matrix: { a: 1, b: 1, c: 0, d: 1 },
+    vector: { x: 2.1, y: 1.1 },
+    prompt:
+      "A shear has only one visible eigenline. Nearby directions slide away from it instead of simply stretching.",
+  },
+  {
+    id: "uniform",
+    label: "Uniform scaling",
+    matrix: { a: 1.8, b: 0, c: 0, d: 1.8 },
+    vector: { x: 2.5, y: 0.9 },
+    prompt:
+      "Every direction stays on its own span here. This is the limiting case where every non-zero vector is an eigenvector.",
+  },
+  {
+    id: "rotation",
+    label: "Pure rotation",
+    matrix: { a: 0, b: -1, c: 1, d: 0 },
+    vector: { x: 2.4, y: 0.8 },
+    prompt:
+      "No real direction survives unchanged. The probe always leaves its span, so the eigenvalues move off the real line.",
+  },
+];
+
+const presetMap = new Map(presets.map((preset) => [preset.id, preset]));
+
+const state = {
+  matrix: { ...presets[0].matrix },
+  vector: { ...presets[0].vector },
+  progress: 1,
+  activePreset: presets[0].id,
+  isPlaying: false,
+  dragPointerId: null,
+  rafId: 0,
+  lastFrameTime: 0,
+  size: { width: 0, height: 0 },
+};
+
+const canvas = document.getElementById("stageCanvas");
+const ctx = canvas.getContext("2d");
+
+const elements = {
+  presetRow: document.getElementById("presetRow"),
+  playButton: document.getElementById("playButton"),
+  progressSlider: document.getElementById("progressSlider"),
+  progressValue: document.getElementById("progressValue"),
+  identityButton: document.getElementById("identityButton"),
+  inputs: {
+    a: document.getElementById("input-a"),
+    b: document.getElementById("input-b"),
+    c: document.getElementById("input-c"),
+    d: document.getElementById("input-d"),
+    x: document.getElementById("vector-x"),
+    y: document.getElementById("vector-y"),
+  },
+  traceValue: document.getElementById("traceValue"),
+  detValue: document.getElementById("detValue"),
+  discValue: document.getElementById("discValue"),
+  lineCountValue: document.getElementById("lineCountValue"),
+  driftValue: document.getElementById("driftValue"),
+  alongValue: document.getElementById("alongValue"),
+  slipValue: document.getElementById("slipValue"),
+  imageValue: document.getElementById("imageValue"),
+  polyValue: document.getElementById("polyValue"),
+  eigenSummary: document.getElementById("eigenSummary"),
+  eigenDetails: document.getElementById("eigenDetails"),
+  presetPrompt: document.getElementById("presetPrompt"),
+  noticeText: document.getElementById("noticeText"),
+  canvasNote: document.getElementById("canvasNote"),
+};
+
+function init() {
+  renderPresetButtons();
+  syncInputsFromState();
+  wireEvents();
+  resizeCanvas();
+  updateAll();
+  if (!prefersReducedMotion.matches) {
+    replayTransform();
+  }
+}
+
+function renderPresetButtons() {
+  presets.forEach((preset) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "preset-chip";
+    button.textContent = preset.label;
+    button.dataset.presetId = preset.id;
+    button.addEventListener("click", () => applyPreset(preset.id));
+    elements.presetRow.appendChild(button);
+  });
+  updatePresetButtons();
+}
+
+function wireEvents() {
+  Object.entries({
+    a: "a",
+    b: "b",
+    c: "c",
+    d: "d",
+  }).forEach(([id, key]) => {
+    bindNumericInput(elements.inputs[id], (value) => {
+      state.matrix[key] = value;
+      state.progress = 1;
+      state.activePreset = null;
+      stopAnimation();
+      updateAll();
+    });
+  });
+
+  Object.entries({
+    x: "x",
+    y: "y",
+  }).forEach(([id, key]) => {
+    bindNumericInput(elements.inputs[id], (value) => {
+      state.vector[key] = value;
+      ensureNonZeroVector();
+      stopAnimation();
+      updateAll();
+    });
+  });
+
+  elements.progressSlider.addEventListener("input", (event) => {
+    state.progress = Number(event.target.value) / 100;
+    stopAnimation();
+    updateAll();
+  });
+
+  elements.playButton.addEventListener("click", replayTransform);
+
+  elements.identityButton.addEventListener("click", () => {
+    state.matrix = { a: 1, b: 0, c: 0, d: 1 };
+    state.activePreset = null;
+    state.progress = 1;
+    stopAnimation();
+    updateAll();
+  });
+
+  canvas.addEventListener("pointerdown", handlePointerDown);
+  canvas.addEventListener("pointermove", handlePointerMove);
+  canvas.addEventListener("pointerup", handlePointerUp);
+  canvas.addEventListener("pointercancel", handlePointerUp);
+
+  const resizeObserver = new ResizeObserver(() => resizeCanvas());
+  resizeObserver.observe(canvas.parentElement);
+  const handleMotionChange = () => {
+    if (prefersReducedMotion.matches) {
+      stopAnimation();
+      state.progress = 1;
+      updateAll();
+    }
+  };
+  if (typeof prefersReducedMotion.addEventListener === "function") {
+    prefersReducedMotion.addEventListener("change", handleMotionChange);
+  } else if (typeof prefersReducedMotion.addListener === "function") {
+    prefersReducedMotion.addListener(handleMotionChange);
+  }
+}
+
+function applyPreset(presetId) {
+  const preset = presetMap.get(presetId);
+  if (!preset) {
+    return;
+  }
+
+  state.matrix = { ...preset.matrix };
+  state.vector = { ...preset.vector };
+  state.activePreset = preset.id;
+  ensureNonZeroVector();
+  syncInputsFromState();
+  updateAll();
+  if (!prefersReducedMotion.matches) {
+    replayTransform();
+  }
+}
+
+function replayTransform() {
+  stopAnimation();
+  state.progress = 0;
+  state.isPlaying = true;
+  state.lastFrameTime = 0;
+  updateAll();
+  state.rafId = requestAnimationFrame(stepAnimation);
+}
+
+function stepAnimation(timestamp) {
+  if (!state.isPlaying) {
+    return;
+  }
+
+  if (state.lastFrameTime === 0) {
+    state.lastFrameTime = timestamp;
+  }
+
+  const delta = timestamp - state.lastFrameTime;
+  state.lastFrameTime = timestamp;
+  state.progress = Math.min(1, state.progress + delta / 1600);
+  updateAll();
+
+  if (state.progress < 1) {
+    state.rafId = requestAnimationFrame(stepAnimation);
+  } else {
+    state.isPlaying = false;
+  }
+}
+
+function stopAnimation() {
+  state.isPlaying = false;
+  state.lastFrameTime = 0;
+  if (state.rafId) {
+    cancelAnimationFrame(state.rafId);
+    state.rafId = 0;
+  }
+}
+
+function handlePointerDown(event) {
+  const tip = worldToScreen(state.vector);
+  const rect = canvas.getBoundingClientRect();
+  const dx = event.clientX - rect.left - tip.x;
+  const dy = event.clientY - rect.top - tip.y;
+
+  if (Math.hypot(dx, dy) > 26) {
+    return;
+  }
+
+  state.dragPointerId = event.pointerId;
+  canvas.setPointerCapture(event.pointerId);
+  updateVectorFromPointer(event);
+}
+
+function handlePointerMove(event) {
+  if (state.dragPointerId !== event.pointerId) {
+    return;
+  }
+
+  updateVectorFromPointer(event);
+}
+
+function handlePointerUp(event) {
+  if (state.dragPointerId !== event.pointerId) {
+    return;
+  }
+
+  state.dragPointerId = null;
+  if (canvas.hasPointerCapture(event.pointerId)) {
+    canvas.releasePointerCapture(event.pointerId);
+  }
+}
+
+function updateVectorFromPointer(event) {
+  const rect = canvas.getBoundingClientRect();
+  const next = screenToWorld(event.clientX - rect.left, event.clientY - rect.top);
+  state.vector.x = clamp(next.x, -WORLD_RANGE + 0.3, WORLD_RANGE - 0.3);
+  state.vector.y = clamp(next.y, -WORLD_RANGE + 0.3, WORLD_RANGE - 0.3);
+  ensureNonZeroVector();
+  stopAnimation();
+  syncVectorInputs();
+  updateAll();
+}
+
+function resizeCanvas() {
+  const rect = canvas.getBoundingClientRect();
+  if (rect.width === 0 || rect.height === 0) {
+    return;
+  }
+
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.round(rect.width * dpr);
+  canvas.height = Math.round(rect.height * dpr);
+  state.size.width = rect.width;
+  state.size.height = rect.height;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  renderScene();
+}
+
+function updateAll() {
+  syncInputsFromState();
+  updatePresetButtons();
+  updateText();
+  renderScene();
+}
+
+function syncInputsFromState() {
+  elements.inputs.a.value = formatInput(state.matrix.a);
+  elements.inputs.b.value = formatInput(state.matrix.b);
+  elements.inputs.c.value = formatInput(state.matrix.c);
+  elements.inputs.d.value = formatInput(state.matrix.d);
+  syncVectorInputs();
+  elements.progressSlider.value = String(Math.round(state.progress * 100));
+  elements.progressValue.textContent = `${Math.round(state.progress * 100)}%`;
+}
+
+function syncVectorInputs() {
+  elements.inputs.x.value = formatInput(state.vector.x);
+  elements.inputs.y.value = formatInput(state.vector.y);
+}
+
+function updatePresetButtons() {
+  const buttons = elements.presetRow.querySelectorAll(".preset-chip");
+  buttons.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.presetId === state.activePreset);
+  });
+}
+
+function updateText() {
+  const eigenData = computeEigenData(state.matrix);
+  const currentMatrix = interpolateMatrix(state.matrix, state.progress);
+  const image = applyMatrix(currentMatrix, state.vector);
+  const drift = computeSpanDrift(state.vector, image);
+  const alongScale = dot(state.vector, image) / Math.max(dot(state.vector, state.vector), EPSILON);
+  const slip = Math.abs(cross(state.vector, image)) / Math.max(length(state.vector), EPSILON);
+
+  elements.traceValue.textContent = formatNumber(eigenData.trace);
+  elements.detValue.textContent = formatNumber(eigenData.det);
+  elements.discValue.textContent = formatNumber(eigenData.discriminant);
+  elements.lineCountValue.textContent = eigenData.realLineLabel;
+
+  elements.driftValue.textContent = `${formatNumber(drift)} deg`;
+  elements.alongValue.textContent = formatNumber(alongScale);
+  elements.slipValue.textContent = formatNumber(slip);
+  elements.imageValue.textContent = `(${formatNumber(image.x)}, ${formatNumber(image.y)})`;
+
+  elements.polyValue.textContent = formatCharacteristicPolynomial(eigenData.trace, eigenData.det);
+
+  const presetPrompt = state.activePreset
+    ? presetMap.get(state.activePreset)?.prompt
+    : "Custom matrix loaded. Edit entries, scrub the transform, and look for directions that keep landing on their own span.";
+  elements.presetPrompt.textContent = presetPrompt;
+
+  elements.eigenSummary.innerHTML = buildEigenSummary(eigenData);
+  elements.eigenDetails.innerHTML = buildEigenDetails(eigenData);
+
+  elements.noticeText.textContent = buildNoticeText(eigenData, drift, alongScale, slip);
+  elements.canvasNote.textContent = buildCanvasNote(eigenData, drift);
+}
+
+function renderScene() {
+  if (!state.size.width || !state.size.height) {
+    return;
+  }
+
+  const { width, height } = state.size;
+  const currentMatrix = interpolateMatrix(state.matrix, state.progress);
+  const finalEigenData = computeEigenData(state.matrix);
+  const image = applyMatrix(currentMatrix, state.vector);
+  const projectionScale = dot(state.vector, image) / Math.max(dot(state.vector, state.vector), EPSILON);
+  const projectedImage = scale(state.vector, projectionScale);
+
+  ctx.clearRect(0, 0, width, height);
+  drawStageBackdrop(width, height);
+  drawUnitCircle({ a: 1, b: 0, c: 0, d: 1 }, {
+    fill: "rgba(255, 255, 255, 0.18)",
+    stroke: "rgba(22, 37, 51, 0.22)",
+    dash: [5, 8],
+    width: 1.2,
+  });
+  drawGrid({ a: 1, b: 0, c: 0, d: 1 }, {
+    lineColor: "rgba(22, 37, 51, 0.18)",
+    axisColor: "rgba(22, 37, 51, 0.42)",
+    lineWidth: 1,
+    axisWidth: 1.9,
+  });
+
+  drawUnitCircle(currentMatrix, {
+    fill: "rgba(95, 135, 199, 0.18)",
+    stroke: "rgba(95, 135, 199, 0.82)",
+    dash: [],
+    width: 1.7,
+  });
+  drawGrid(currentMatrix, {
+    lineColor: "rgba(36, 121, 111, 0.86)",
+    axisColor: "rgba(25, 98, 89, 1)",
+    lineWidth: 1.3,
+    axisWidth: 2.5,
+  });
+
+  drawEigenlines(finalEigenData);
+  drawProbeGuide(state.vector);
+  drawBasisVectors(currentMatrix);
+  drawProjection(projectedImage, image);
+  drawArrow(state.vector, {
+    color: "rgba(216, 154, 34, 0.72)",
+    width: 2.4,
+    label: "v",
+    headSize: 11,
+  });
+  drawArrow(image, {
+    color: "rgba(204, 103, 79, 0.96)",
+    width: 3.2,
+    label: "T(v)",
+    headSize: 12,
+  });
+  drawHandle(state.vector);
+  drawOrigin();
+}
+
+function drawStageBackdrop(width, height) {
+  const gradient = ctx.createLinearGradient(0, 0, 0, height);
+  gradient.addColorStop(0, "rgba(255, 255, 255, 0.18)");
+  gradient.addColorStop(1, "rgba(216, 191, 146, 0.26)");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, width, height);
+}
+
+function drawGrid(matrix, style) {
+  for (let k = -GRID_LIMIT; k <= GRID_LIMIT; k += 1) {
+    const lineStyle = k === 0
+      ? { stroke: style.axisColor, width: style.axisWidth }
+      : { stroke: style.lineColor, width: style.lineWidth };
+    const verticalA = applyMatrix(matrix, { x: k, y: -WORLD_RANGE });
+    const verticalB = applyMatrix(matrix, { x: k, y: WORLD_RANGE });
+    const horizontalA = applyMatrix(matrix, { x: -WORLD_RANGE, y: k });
+    const horizontalB = applyMatrix(matrix, { x: WORLD_RANGE, y: k });
+    drawWorldLine(verticalA, verticalB, lineStyle);
+    drawWorldLine(horizontalA, horizontalB, lineStyle);
+  }
+}
+
+function drawUnitCircle(matrix, style) {
+  ctx.save();
+  ctx.beginPath();
+  for (let index = 0; index <= 128; index += 1) {
+    const angle = (index / 128) * Math.PI * 2;
+    const point = applyMatrix(matrix, { x: Math.cos(angle), y: Math.sin(angle) });
+    const screen = worldToScreen(point);
+    if (index === 0) {
+      ctx.moveTo(screen.x, screen.y);
+    } else {
+      ctx.lineTo(screen.x, screen.y);
+    }
+  }
+  ctx.fillStyle = style.fill;
+  ctx.strokeStyle = style.stroke;
+  ctx.lineWidth = style.width;
+  ctx.setLineDash(style.dash);
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawEigenlines(eigenData) {
+  if (!eigenData.real) {
+    return;
+  }
+
+  if (eigenData.allDirections) {
+    ctx.save();
+    ctx.strokeStyle = "rgba(205, 95, 65, 0.42)";
+    ctx.lineWidth = 1.3;
+    ctx.setLineDash([5, 8]);
+    for (let angle = 0; angle < Math.PI; angle += Math.PI / 6) {
+      const direction = { x: Math.cos(angle), y: Math.sin(angle) };
+      drawInfiniteLine(direction);
+    }
+    ctx.restore();
+    return;
+  }
+
+  eigenData.eigenpairs.forEach((pair) => {
+    ctx.save();
+    ctx.strokeStyle = "rgba(205, 95, 65, 0.95)";
+    ctx.lineWidth = 1.9;
+    ctx.setLineDash([10, 8]);
+    drawInfiniteLine(pair.vector);
+    ctx.restore();
+
+    const labelPoint = scale(pair.vector, 4.35);
+    drawTag(labelPoint, `lambda = ${formatNumber(pair.value)}`, "rgba(205, 95, 65, 0.12)");
+  });
+}
+
+function drawProbeGuide(vector) {
+  ctx.save();
+  ctx.strokeStyle = "rgba(216, 154, 34, 0.92)";
+  ctx.lineWidth = 1.9;
+  ctx.setLineDash([8, 7]);
+  drawInfiniteLine(vector);
+  ctx.restore();
+}
+
+function drawBasisVectors(matrix) {
+  const e1 = { x: matrix.a, y: matrix.c };
+  const e2 = { x: matrix.b, y: matrix.d };
+  drawArrow(e1, {
+    color: "rgba(36, 121, 111, 0.95)",
+    width: 2.2,
+    label: "T(e1)",
+    headSize: 10,
+  });
+  drawArrow(e2, {
+    color: "rgba(95, 135, 199, 0.95)",
+    width: 2.2,
+    label: "T(e2)",
+    headSize: 10,
+  });
+}
+
+function drawProjection(projected, image) {
+  const distance = length(subtract(image, projected));
+  if (distance < 0.04) {
+    return;
+  }
+
+  ctx.save();
+  ctx.strokeStyle = "rgba(22, 37, 51, 0.4)";
+  ctx.lineWidth = 1.4;
+  ctx.setLineDash([5, 6]);
+  drawWorldLine(projected, image, { stroke: "rgba(22, 37, 51, 0.4)", width: 1.4 });
+  ctx.restore();
+}
+
+function drawArrow(vector, options) {
+  const start = worldToScreen({ x: 0, y: 0 });
+  const end = worldToScreen(vector);
+  const direction = normalize(vector);
+  const angle = Math.atan2(end.y - start.y, end.x - start.x);
+  const headSize = options.headSize || 10;
+
+  ctx.save();
+  ctx.strokeStyle = options.color;
+  ctx.fillStyle = options.color;
+  ctx.lineWidth = options.width;
+  ctx.beginPath();
+  ctx.moveTo(start.x, start.y);
+  ctx.lineTo(end.x, end.y);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(end.x, end.y);
+  ctx.lineTo(
+    end.x - headSize * Math.cos(angle - Math.PI / 7),
+    end.y - headSize * Math.sin(angle - Math.PI / 7)
+  );
+  ctx.lineTo(
+    end.x - headSize * Math.cos(angle + Math.PI / 7),
+    end.y - headSize * Math.sin(angle + Math.PI / 7)
+  );
+  ctx.closePath();
+  ctx.fill();
+
+  if (options.label && length(vector) > EPSILON) {
+    const labelPoint = add(vector, scale(direction, 0.35));
+    drawTag(labelPoint, options.label, "rgba(255, 255, 255, 0.82)");
+  }
+
+  ctx.restore();
+}
+
+function drawHandle(point) {
+  const screen = worldToScreen(point);
+  ctx.save();
+  ctx.fillStyle = "rgba(216, 154, 34, 1)";
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(screen.x, screen.y, 8.5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawOrigin() {
+  const center = worldToScreen({ x: 0, y: 0 });
+  ctx.save();
+  ctx.fillStyle = "rgba(22, 37, 51, 0.8)";
+  ctx.beginPath();
+  ctx.arc(center.x, center.y, 4, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawInfiniteLine(direction) {
+  const unit = normalize(direction);
+  if (length(unit) < EPSILON) {
+    return;
+  }
+  const start = scale(unit, -WORLD_RANGE * 1.4);
+  const end = scale(unit, WORLD_RANGE * 1.4);
+  drawWorldLine(start, end, { stroke: ctx.strokeStyle, width: ctx.lineWidth });
+}
+
+function drawWorldLine(start, end, style) {
+  const a = worldToScreen(start);
+  const b = worldToScreen(end);
+  ctx.save();
+  ctx.strokeStyle = style.stroke;
+  ctx.lineWidth = style.width;
+  ctx.beginPath();
+  ctx.moveTo(a.x, a.y);
+  ctx.lineTo(b.x, b.y);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawTag(worldPoint, text, fill) {
+  const point = worldToScreen(worldPoint);
+  ctx.save();
+  ctx.font = '600 14px "Avenir Next", "Segoe UI", sans-serif';
+  const metrics = ctx.measureText(text);
+  const paddingX = 8;
+  const paddingY = 6;
+  const x = point.x - metrics.width / 2 - paddingX;
+  const y = point.y - 16;
+  const width = metrics.width + paddingX * 2;
+  const height = 26;
+  ctx.fillStyle = fill;
+  roundRect(ctx, x, y, width, height, 12);
+  ctx.fill();
+  ctx.fillStyle = "rgba(18, 32, 44, 0.95)";
+  ctx.fillText(text, x + paddingX, y + 17);
+  ctx.restore();
+}
+
+function roundRect(context, x, y, width, height, radius) {
+  context.beginPath();
+  context.moveTo(x + radius, y);
+  context.arcTo(x + width, y, x + width, y + height, radius);
+  context.arcTo(x + width, y + height, x, y + height, radius);
+  context.arcTo(x, y + height, x, y, radius);
+  context.arcTo(x, y, x + width, y, radius);
+  context.closePath();
+}
+
+function computeEigenData(matrix) {
+  const trace = matrix.a + matrix.d;
+  const det = matrix.a * matrix.d - matrix.b * matrix.c;
+  const discriminant = trace * trace - 4 * det;
+
+  if (discriminant < -EPSILON) {
+    return {
+      trace,
+      det,
+      discriminant,
+      real: false,
+      allDirections: false,
+      repeated: false,
+      eigenpairs: [],
+      realLineLabel: "0",
+      complexRealPart: trace / 2,
+      complexImagPart: Math.sqrt(-discriminant) / 2,
+    };
+  }
+
+  const adjustedDisc = Math.abs(discriminant) < EPSILON ? 0 : discriminant;
+  const root = Math.sqrt(Math.max(0, adjustedDisc));
+  const lambda1 = (trace + root) / 2;
+  const lambda2 = (trace - root) / 2;
+  const repeated = Math.abs(lambda1 - lambda2) < 1e-7;
+  const scalarIdentity =
+    Math.abs(matrix.b) < EPSILON &&
+    Math.abs(matrix.c) < EPSILON &&
+    Math.abs(matrix.a - lambda1) < EPSILON &&
+    Math.abs(matrix.d - lambda1) < EPSILON;
+
+  if (scalarIdentity) {
+    return {
+      trace,
+      det,
+      discriminant: adjustedDisc,
+      real: true,
+      allDirections: true,
+      repeated: true,
+      eigenpairs: [{ value: lambda1, vector: { x: 1, y: 0 } }],
+      realLineLabel: "all",
+    };
+  }
+
+  if (repeated) {
+    return {
+      trace,
+      det,
+      discriminant: adjustedDisc,
+      real: true,
+      allDirections: false,
+      repeated: true,
+      eigenpairs: [{ value: lambda1, vector: computeEigenvector(matrix, lambda1) }],
+      realLineLabel: "1",
+    };
+  }
+
+  return {
+    trace,
+    det,
+    discriminant: adjustedDisc,
+    real: true,
+    allDirections: false,
+    repeated: false,
+    eigenpairs: [
+      { value: lambda1, vector: computeEigenvector(matrix, lambda1) },
+      { value: lambda2, vector: computeEigenvector(matrix, lambda2) },
+    ],
+    realLineLabel: "2",
+  };
+}
+
+function computeEigenvector(matrix, eigenvalue) {
+  const row1 = { x: matrix.a - eigenvalue, y: matrix.b };
+  const row2 = { x: matrix.c, y: matrix.d - eigenvalue };
+  const useRow1 = length(row1) >= length(row2);
+  const base = useRow1 ? row1 : row2;
+  let vector = { x: base.y, y: -base.x };
+
+  if (length(vector) < EPSILON) {
+    vector = useRow1 ? { x: row2.y, y: -row2.x } : { x: row1.y, y: -row1.x };
+  }
+
+  if (length(vector) < EPSILON) {
+    vector = { x: 1, y: 0 };
+  }
+
+  vector = normalize(vector);
+  if (vector.x < -EPSILON || (Math.abs(vector.x) < EPSILON && vector.y < 0)) {
+    vector = scale(vector, -1);
+  }
+
+  return vector;
+}
+
+function buildEigenSummary(eigenData) {
+  if (!eigenData.real) {
+    return `
+      <strong>No real eigenvectors.</strong>
+      The characteristic polynomial has complex roots, so no real line stays fixed in the plane.
+    `;
+  }
+
+  if (eigenData.allDirections) {
+    return `
+      <strong>Every non-zero direction is an eigenvector.</strong>
+      This matrix acts like a pure scaling, so the entire plane already points along eigenlines.
+    `;
+  }
+
+  if (eigenData.repeated) {
+    return `
+      <strong>One visible eigenline.</strong>
+      The eigenvalue repeats, but only one real direction survives as a line that maps to itself.
+    `;
+  }
+
+  return `
+    <strong>Two distinct real eigenlines.</strong>
+    Most vectors bend away, but these two directions only stretch or flip.
+  `;
+}
+
+function buildEigenDetails(eigenData) {
+  if (!eigenData.real) {
+    return `
+      <div class="detail-item">
+        <h4>Complex pair</h4>
+        <p>
+          lambda = ${formatNumber(eigenData.complexRealPart)}
+          +/- ${formatNumber(eigenData.complexImagPart)}i
+        </p>
+      </div>
+    `;
+  }
+
+  if (eigenData.allDirections) {
+    return `
+      <div class="detail-item">
+        <h4>Repeated eigenvalue</h4>
+        <p>lambda = ${formatNumber(eigenData.eigenpairs[0].value)} for every non-zero vector.</p>
+      </div>
+    `;
+  }
+
+  return eigenData.eigenpairs
+    .map((pair, index) => {
+      const vector = pair.vector;
+      return `
+        <div class="detail-item">
+          <h4>Eigenpair ${index + 1}</h4>
+          <p>
+            lambda = ${formatNumber(pair.value)},
+            direction approx (${formatNumber(vector.x)}, ${formatNumber(vector.y)})
+          </p>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function buildNoticeText(eigenData, drift, alongScale, slip) {
+  if (!eigenData.real) {
+    return "The orange image always slides off the gold guide here. Rotation dominates, so the invariant directions only appear after extending the problem into the complex plane.";
+  }
+
+  if (eigenData.allDirections) {
+    return `Every probe direction works. The current one stays on its span with scale ${formatNumber(alongScale)} and essentially zero off-span slip.`;
+  }
+
+  if (drift < 0.8) {
+    if (alongScale < 0) {
+      return `You found an eigenline. The image stays on the same span but flips through the origin with eigenvalue about ${formatNumber(alongScale)}.`;
+    }
+    return `You found an eigenline. The image stays on the same span and scales by about ${formatNumber(alongScale)}.`;
+  }
+
+  if (eigenData.repeated) {
+    return `Only one real line works in this repeated-root case. Your current probe misses it by ${formatNumber(drift)} degrees and slips ${formatNumber(slip)} units off the span.`;
+  }
+
+  return `This probe direction misses the eigenlines by ${formatNumber(drift)} degrees, so the transformation mixes it with another direction instead of just scaling it.`;
+}
+
+function buildCanvasNote(eigenData, drift) {
+  const progressPercent = Math.round(state.progress * 100);
+  if (!eigenData.real) {
+    return `t = ${progressPercent}%. The dashed gold line is only a probe span now; no real eigenline exists for the target matrix.`;
+  }
+
+  if (eigenData.allDirections) {
+    return `t = ${progressPercent}%. Identity and the target matrix share every direction, so the entire animation preserves all spans.`;
+  }
+
+  if (drift < 0.8) {
+    return `t = ${progressPercent}%. Because the interpolation uses I + t(A - I), any final eigenvector remains on its span during the whole animation.`;
+  }
+
+  return `t = ${progressPercent}%. Drag the gold handle until the orange image collapses back onto the gold guide; that is the geometric signature of an eigenvector.`;
+}
+
+function formatCharacteristicPolynomial(trace, det) {
+  const parts = ["p(lambda) = lambda^2"];
+  const linearCoefficient = -trace;
+  if (Math.abs(linearCoefficient) >= EPSILON) {
+    const sign = linearCoefficient >= 0 ? " + " : " - ";
+    const magnitude = Math.abs(linearCoefficient);
+    const coefficient = Math.abs(magnitude - 1) < EPSILON ? "" : formatNumber(magnitude);
+    parts.push(`${sign}${coefficient}lambda`);
+  }
+
+  if (Math.abs(det) >= EPSILON) {
+    const sign = det >= 0 ? " + " : " - ";
+    parts.push(`${sign}${formatNumber(Math.abs(det))}`);
+  }
+
+  return parts.join("");
+}
+
+function interpolateMatrix(matrix, progress) {
+  return {
+    a: 1 + progress * (matrix.a - 1),
+    b: progress * matrix.b,
+    c: progress * matrix.c,
+    d: 1 + progress * (matrix.d - 1),
+  };
+}
+
+function applyMatrix(matrix, vector) {
+  return {
+    x: matrix.a * vector.x + matrix.b * vector.y,
+    y: matrix.c * vector.x + matrix.d * vector.y,
+  };
+}
+
+function computeSpanDrift(a, b) {
+  return radiansToDegrees(Math.atan2(Math.abs(cross(a, b)), Math.abs(dot(a, b))));
+}
+
+function worldToScreen(point) {
+  const scalePixels = Math.min(state.size.width, state.size.height) / (WORLD_RANGE * 2);
+  return {
+    x: state.size.width / 2 + point.x * scalePixels,
+    y: state.size.height / 2 - point.y * scalePixels,
+  };
+}
+
+function screenToWorld(x, y) {
+  const scalePixels = Math.min(state.size.width, state.size.height) / (WORLD_RANGE * 2);
+  return {
+    x: (x - state.size.width / 2) / scalePixels,
+    y: -(y - state.size.height / 2) / scalePixels,
+  };
+}
+
+function ensureNonZeroVector() {
+  if (length(state.vector) < 0.18) {
+    state.vector.x = 0.35;
+    state.vector.y = 0.35;
+  }
+}
+
+function sanitizeNumber(value) {
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function bindNumericInput(input, onCommit) {
+  const commit = () => {
+    const raw = input.value.trim();
+    if (raw === "" || raw === "-" || raw === "." || raw === "-.") {
+      syncInputsFromState();
+      return;
+    }
+
+    const value = sanitizeNumber(raw);
+    onCommit(value);
+  };
+
+  input.addEventListener("change", commit);
+  input.addEventListener("blur", commit);
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      commit();
+      input.blur();
+    }
+  });
+}
+
+function formatNumber(value) {
+  if (!Number.isFinite(value)) {
+    return "0";
+  }
+
+  const rounded = Math.abs(value) < 1e-9 ? 0 : value;
+  return rounded.toFixed(Math.abs(rounded) >= 10 ? 1 : 2).replace(/\.?0+$/, "");
+}
+
+function formatInput(value) {
+  return Number.isInteger(value) ? String(value) : String(Number(value.toFixed(3)));
+}
+
+function radiansToDegrees(radians) {
+  return (radians * 180) / Math.PI;
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function add(a, b) {
+  return { x: a.x + b.x, y: a.y + b.y };
+}
+
+function subtract(a, b) {
+  return { x: a.x - b.x, y: a.y - b.y };
+}
+
+function scale(vector, factor) {
+  return { x: vector.x * factor, y: vector.y * factor };
+}
+
+function dot(a, b) {
+  return a.x * b.x + a.y * b.y;
+}
+
+function cross(a, b) {
+  return a.x * b.y - a.y * b.x;
+}
+
+function length(vector) {
+  return Math.hypot(vector.x, vector.y);
+}
+
+function normalize(vector) {
+  const magnitude = length(vector);
+  if (magnitude < EPSILON) {
+    return { x: 0, y: 0 };
+  }
+  return scale(vector, 1 / magnitude);
+}
+
+init();

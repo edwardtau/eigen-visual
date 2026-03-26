@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eigen Explorer</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <section class="hero-copy">
+          <p class="eyebrow">
+            Inspired by the visual storytelling of 3Blue1Brown's eigenvalues lesson
+          </p>
+          <h1>Eigen Explorer</h1>
+          <p class="lede">
+            Deform the plane, drag a probe vector, and look for the rare directions
+            that refuse to turn off their own span.
+          </p>
+        </section>
+
+        <section class="hero-metrics" aria-label="Matrix summary">
+          <div class="metric">
+            <span>Trace</span>
+            <strong id="traceValue">0</strong>
+          </div>
+          <div class="metric">
+            <span>Determinant</span>
+            <strong id="detValue">0</strong>
+          </div>
+          <div class="metric">
+            <span>Discriminant</span>
+            <strong id="discValue">0</strong>
+          </div>
+          <div class="metric">
+            <span>Real eigenlines</span>
+            <strong id="lineCountValue">0</strong>
+          </div>
+        </section>
+      </header>
+
+      <main class="app-layout">
+        <section class="stage-card">
+          <div class="stage-toolbar">
+            <div class="toolbar-group">
+              <span class="toolbar-label">Lesson presets</span>
+              <div class="preset-row" id="presetRow"></div>
+            </div>
+
+            <div class="toolbar-group toolbar-group--compact">
+              <button id="playButton" class="primary-button" type="button">
+                Replay transform
+              </button>
+
+              <label class="progress-wrap" for="progressSlider">
+                <span>Transform</span>
+                <strong id="progressValue">100%</strong>
+                <input
+                  id="progressSlider"
+                  type="range"
+                  min="0"
+                  max="100"
+                  value="100"
+                />
+              </label>
+            </div>
+          </div>
+
+          <div class="canvas-wrap">
+            <canvas
+              id="stageCanvas"
+              aria-label="Interactive 2D linear transformation visualizer"
+            ></canvas>
+            <div class="canvas-note" id="canvasNote"></div>
+          </div>
+
+          <div class="legend" aria-label="Visualization legend">
+            <div class="legend-item">
+              <span class="legend-swatch legend-swatch--reference"></span>
+              <span>reference grid</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch legend-swatch--transform"></span>
+              <span>transformed grid</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch legend-swatch--eigen"></span>
+              <span>eigenlines</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch legend-swatch--probe"></span>
+              <span>probe span and image</span>
+            </div>
+          </div>
+        </section>
+
+        <aside class="sidebar">
+          <section class="panel panel--matrix">
+            <div class="panel-header">
+              <h2>Matrix A</h2>
+              <p>The columns show where the basis vectors land.</p>
+            </div>
+
+            <div class="matrix-shell">
+              <div class="matrix-grid">
+                <label>
+                  <span class="sr-only">Matrix entry a</span>
+                  <input id="input-a" type="number" step="0.1" value="3" />
+                </label>
+                <label>
+                  <span class="sr-only">Matrix entry b</span>
+                  <input id="input-b" type="number" step="0.1" value="1" />
+                </label>
+                <label>
+                  <span class="sr-only">Matrix entry c</span>
+                  <input id="input-c" type="number" step="0.1" value="0" />
+                </label>
+                <label>
+                  <span class="sr-only">Matrix entry d</span>
+                  <input id="input-d" type="number" step="0.1" value="2" />
+                </label>
+              </div>
+            </div>
+
+            <div class="button-row">
+              <button id="identityButton" type="button">Reset to identity</button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <h2>Probe vector v</h2>
+              <p>Drag the gold handle on the stage or type coordinates here.</p>
+            </div>
+
+            <div class="vector-grid">
+              <label>
+                <span>x</span>
+                <input id="vector-x" type="number" step="0.1" value="2.2" />
+              </label>
+              <label>
+                <span>y</span>
+                <input id="vector-y" type="number" step="0.1" value="1.4" />
+              </label>
+            </div>
+
+            <div class="readings-grid">
+              <div class="reading">
+                <span>Span drift</span>
+                <strong id="driftValue">0 deg</strong>
+              </div>
+              <div class="reading">
+                <span>Along-probe scale</span>
+                <strong id="alongValue">0</strong>
+              </div>
+              <div class="reading">
+                <span>Off-span slip</span>
+                <strong id="slipValue">0</strong>
+              </div>
+              <div class="reading">
+                <span>Current image T(v)</span>
+                <strong id="imageValue">(0, 0)</strong>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <h2>Eigen readout</h2>
+              <p>These values belong to the target matrix A.</p>
+            </div>
+
+            <div class="formula-box" id="polyValue">
+              p(lambda) = lambda^2
+            </div>
+
+            <div id="eigenSummary" class="summary-box"></div>
+            <div id="eigenDetails" class="detail-list"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <h2>What to notice</h2>
+              <p>Use the visuals first. Let the algebra explain what your eye found.</p>
+            </div>
+
+            <p id="presetPrompt" class="prompt-text"></p>
+            <p id="noticeText" class="notice-text"></p>
+          </section>
+        </aside>
+      </main>
+
+      <section class="study-notes" aria-label="Learning notes">
+        <article class="note-card">
+          <h3>Core question</h3>
+          <p>
+            Does the image of <strong>v</strong> stay on the dashed gold line?
+            If yes, that direction is acting like an eigenvector. If the image
+            falls away from that line, the transformation is mixing directions.
+          </p>
+        </article>
+
+        <article class="note-card">
+          <h3>How lambda appears</h3>
+          <p>
+            When the drift drops to zero, the along-probe scale becomes the
+            corresponding eigenvalue. Positive values keep direction, negative
+            values flip through the origin.
+          </p>
+        </article>
+
+        <article class="note-card">
+          <h3>Suggested route</h3>
+          <p>
+            Start with two real directions, then try the flip and the shear.
+            Finish with pure rotation to see a matrix whose invariant lines
+            disappear from the real plane.
+          </p>
+        </article>
+      </section>
+    </div>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>

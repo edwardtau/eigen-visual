@@ -62,16 +62,16 @@ canvas {
 
 .page-shell {
   position: relative;
-  max-width: 1500px;
+  max-width: 1320px;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: 1rem;
 }
 
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.8fr);
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 0.85rem;
+  margin-bottom: 0.85rem;
 }
 
 .hero-copy,
@@ -88,7 +88,7 @@ canvas {
 }
 
 .hero-copy {
-  padding: 1.5rem 1.75rem;
+  padding: 1.2rem 1.4rem;
 }
 
 .hero-copy h1,
@@ -100,10 +100,10 @@ canvas {
 }
 
 .hero-copy h1 {
-  font-size: clamp(2.4rem, 5vw, 4.8rem);
+  font-size: clamp(2rem, 4.4vw, 4rem);
   line-height: 0.94;
   letter-spacing: -0.04em;
-  margin-top: 0.35rem;
+  margin-top: 0.25rem;
 }
 
 .eyebrow {
@@ -117,21 +117,21 @@ canvas {
 
 .lede {
   max-width: 46rem;
-  margin: 0.9rem 0 0;
-  font-size: 1.05rem;
-  line-height: 1.65;
+  margin: 0.7rem 0 0;
+  font-size: 0.98rem;
+  line-height: 1.55;
   color: var(--muted);
 }
 
 .hero-metrics {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.9rem;
-  padding: 1rem;
+  gap: 0.7rem;
+  padding: 0.8rem;
 }
 
 .metric {
-  padding: 1rem;
+  padding: 0.8rem 0.9rem;
   border-radius: var(--radius-md);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(249, 238, 220, 0.98));
@@ -148,31 +148,31 @@ canvas {
 
 .metric strong {
   display: block;
-  margin-top: 0.45rem;
-  font-size: 1.6rem;
+  margin-top: 0.35rem;
+  font-size: 1.35rem;
   font-family: var(--font-display);
 }
 
 .app-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(320px, 430px);
-  gap: 1rem;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 390px);
+  gap: 0.85rem;
 }
 
 .stage-card {
-  padding: 1rem;
+  padding: 0.85rem;
 }
 
 .stage-toolbar {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 0.8rem;
+  margin-bottom: 0.85rem;
 }
 
 .toolbar-group {
   display: grid;
-  gap: 0.6rem;
+  gap: 0.5rem;
 }
 
 .toolbar-group--compact {
@@ -189,8 +189,26 @@ canvas {
 
 .preset-row {
   display: flex;
+  flex-wrap: nowrap;
+  gap: 0.35rem;
+  overflow-x: auto;
+  padding-bottom: 0.1rem;
+  scrollbar-width: none;
+}
+
+.preset-row::-webkit-scrollbar {
+  display: none;
+}
+
+.mode-control {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.mode-row {
+  display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.45rem;
 }
 
 .preset-chip,
@@ -206,8 +224,26 @@ button {
 }
 
 .preset-chip {
-  padding: 0.65rem 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0;
+  min-height: 2rem;
+  min-width: 0;
+  padding: 0.45rem 0.55rem;
   background: rgba(22, 37, 51, 0.08);
+  color: var(--ink);
+  text-align: center;
+  line-height: 1.1;
+  white-space: nowrap;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.mode-chip {
+  min-height: 2.15rem;
+  padding: 0.55rem 0.8rem;
+  background: rgba(22, 37, 51, 0.07);
   color: var(--ink);
 }
 
@@ -222,15 +258,37 @@ button:hover {
   color: white;
 }
 
+.mode-chip.is-active {
+  background: linear-gradient(135deg, #183144 0%, #3a6480 100%);
+  color: white;
+}
+
+.mode-chip:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  box-shadow: none;
+  transform: none;
+}
+
 button {
-  padding: 0.75rem 1rem;
+  padding: 0.68rem 0.95rem;
   background: rgba(22, 37, 51, 0.1);
   color: var(--ink);
 }
 
 .primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: linear-gradient(135deg, var(--coral) 0%, #de8267 100%);
   color: white;
+  height: 2rem;
+  min-height: 2rem;
+  padding: 0 0.7rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1.1;
+  white-space: nowrap;
 }
 
 .progress-wrap {
@@ -239,7 +297,7 @@ button {
   align-items: center;
   gap: 0.35rem 0.75rem;
   width: min(100%, 18rem);
-  padding: 0.85rem 1rem;
+  padding: 0.72rem 0.9rem;
   border-radius: var(--radius-md);
   background: rgba(22, 37, 51, 0.06);
 }
@@ -262,10 +320,18 @@ button {
   accent-color: var(--coral);
 }
 
+.mode-hint {
+  margin: 0;
+  max-width: 30rem;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
 .canvas-wrap {
   position: relative;
   aspect-ratio: 1 / 1;
-  min-height: 28rem;
+  min-height: 24rem;
   overflow: hidden;
   border-radius: calc(var(--radius-lg) - 6px);
   background:
@@ -287,27 +353,28 @@ button {
   left: 1rem;
   right: 1rem;
   bottom: 1rem;
-  padding: 0.85rem 1rem;
+  padding: 0.7rem 0.85rem;
   border-radius: var(--radius-md);
   background: rgba(255, 252, 247, 0.92);
   border: 1px solid rgba(22, 37, 51, 0.12);
   color: var(--ink);
-  line-height: 1.5;
+  line-height: 1.4;
+  font-size: 0.9rem;
 }
 
 .legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  padding-top: 0.9rem;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
 }
 
 .legend-item {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   color: var(--muted);
-  font-size: 0.92rem;
+  font-size: 0.85rem;
 }
 
 .legend-swatch {
@@ -342,26 +409,27 @@ button {
 
 .sidebar {
   display: grid;
-  gap: 1rem;
+  gap: 0.85rem;
 }
 
 .panel {
-  padding: 1rem 1.05rem;
+  padding: 0.85rem 0.9rem;
 }
 
 .panel-header {
-  margin-bottom: 0.9rem;
+  margin-bottom: 0.75rem;
 }
 
 .panel-header p {
-  margin: 0.45rem 0 0;
+  margin: 0.35rem 0 0;
   color: var(--muted);
-  line-height: 1.5;
+  line-height: 1.42;
+  font-size: 0.92rem;
 }
 
 .matrix-shell {
   position: relative;
-  padding: 0.65rem 1.15rem;
+  padding: 0.55rem 1rem;
   border-radius: var(--radius-md);
   background: rgba(22, 37, 51, 0.06);
 }
@@ -390,7 +458,7 @@ button {
 .matrix-grid,
 .vector-grid {
   display: grid;
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
 .matrix-grid {
@@ -416,7 +484,7 @@ button {
 
 input[type="number"] {
   width: 100%;
-  padding: 0.75rem 0.8rem;
+  padding: 0.65rem 0.75rem;
   border-radius: var(--radius-sm);
   border: 1px solid rgba(22, 37, 51, 0.16);
   background: rgba(255, 255, 255, 0.94);
@@ -432,14 +500,14 @@ input[type="range"]:focus-visible {
 }
 
 .button-row {
-  margin-top: 0.9rem;
+  margin-top: 0.75rem;
 }
 
 .readings-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.7rem;
-  margin-top: 0.95rem;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
 }
 
 .reading,
@@ -452,7 +520,7 @@ input[type="range"]:focus-visible {
 }
 
 .reading {
-  padding: 0.8rem 0.9rem;
+  padding: 0.68rem 0.8rem;
 }
 
 .reading span {
@@ -465,26 +533,27 @@ input[type="range"]:focus-visible {
 
 .reading strong {
   display: block;
-  margin-top: 0.45rem;
+  margin-top: 0.35rem;
   font-family: var(--font-display);
-  font-size: 1.12rem;
+  font-size: 1rem;
 }
 
 .formula-box,
 .summary-box {
-  padding: 0.85rem 0.95rem;
+  padding: 0.75rem 0.85rem;
 }
 
 .formula-box {
   font-family: var(--font-display);
-  font-size: 1.12rem;
+  font-size: 1rem;
   background:
     linear-gradient(135deg, rgba(95, 135, 199, 0.13), rgba(36, 121, 111, 0.12));
 }
 
 .summary-box {
-  margin-top: 0.85rem;
-  line-height: 1.6;
+  margin-top: 0.75rem;
+  line-height: 1.5;
+  font-size: 0.94rem;
 }
 
 .summary-box strong {
@@ -493,29 +562,31 @@ input[type="range"]:focus-visible {
 
 .detail-list {
   display: grid;
-  gap: 0.7rem;
-  margin-top: 0.85rem;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
 }
 
 .detail-item {
-  padding: 0.8rem 0.9rem;
+  padding: 0.68rem 0.8rem;
 }
 
 .detail-item h4 {
   margin: 0 0 0.3rem;
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
 .detail-item p {
   margin: 0;
   color: var(--muted);
-  line-height: 1.55;
+  line-height: 1.45;
+  font-size: 0.9rem;
 }
 
 .prompt-text,
 .notice-text {
   margin: 0;
-  line-height: 1.65;
+  line-height: 1.52;
+  font-size: 0.94rem;
 }
 
 .prompt-text {
@@ -523,24 +594,25 @@ input[type="range"]:focus-visible {
 }
 
 .notice-text {
-  margin-top: 0.7rem;
+  margin-top: 0.55rem;
   color: var(--muted);
 }
 
 .study-notes {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 0.85rem;
+  margin-top: 0.85rem;
 }
 
 .note-card {
-  padding: 1rem 1.1rem;
+  padding: 0.9rem 1rem;
 }
 
 .note-card p {
-  margin: 0.7rem 0 0;
-  line-height: 1.7;
+  margin: 0.6rem 0 0;
+  line-height: 1.55;
+  font-size: 0.93rem;
   color: var(--muted);
 }
 
@@ -586,7 +658,7 @@ input[type="range"]:focus-visible {
 
 @media (max-width: 760px) {
   .page-shell {
-    padding: 1rem;
+    padding: 0.85rem;
   }
 
   .hero-copy,
@@ -611,8 +683,7 @@ input[type="range"]:focus-visible {
     justify-items: stretch;
     min-width: 0;
   }
-
   .canvas-wrap {
-    min-height: 22rem;
+    min-height: 20rem;
   }
 }

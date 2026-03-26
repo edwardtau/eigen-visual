@@ -47,11 +47,34 @@
             <div class="toolbar-group">
               <span class="toolbar-label">Lesson presets</span>
               <div class="preset-row" id="presetRow"></div>
+
+              <div class="mode-control" aria-label="Animation view mode">
+                <span class="toolbar-label">Animation view</span>
+                <div class="mode-row" id="modeRow">
+                  <button
+                    type="button"
+                    class="mode-chip"
+                    data-mode="matrix-morph"
+                    aria-pressed="true"
+                  >
+                    Matrix morph
+                  </button>
+                  <button
+                    type="button"
+                    class="mode-chip"
+                    data-mode="geometric-action"
+                    aria-pressed="false"
+                  >
+                    Geometric action
+                  </button>
+                </div>
+                <p id="modeHint" class="mode-hint"></p>
+              </div>
             </div>
 
             <div class="toolbar-group toolbar-group--compact">
               <button id="playButton" class="primary-button" type="button">
-                Replay transform
+                Animate transform
               </button>
 
               <label class="progress-wrap" for="progressSlider">
@@ -100,7 +123,7 @@
           <section class="panel panel--matrix">
             <div class="panel-header">
               <h2>Matrix A</h2>
-              <p>The columns show where the basis vectors land.</p>
+              <p>Edit the entries here or drag the blue and green arrow tips on the stage.</p>
             </div>
 
             <div class="matrix-shell">
@@ -212,11 +235,12 @@
         </article>
 
         <article class="note-card">
-          <h3>Suggested route</h3>
+          <h3>Two views</h3>
           <p>
-            Start with two real directions, then try the flip and the shear.
-            Finish with pure rotation to see a matrix whose invariant lines
-            disappear from the real plane.
+            <strong>Matrix morph</strong> blends matrix entries from the identity
+            to the target matrix. <strong>Geometric action</strong> is the cleaner
+            story for pure rotations, because it turns the plane without sneaking
+            in extra scaling.
           </p>
         </article>
       </section>

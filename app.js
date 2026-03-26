@@ -1,6 +1,7 @@
 const WORLD_RANGE = 5.6;
 const GRID_LIMIT = 5;
 const EPSILON = 1e-8;
+const DRAG_HANDLE_RADIUS = 26;
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 const presets = [
@@ -53,8 +54,10 @@ const state = {
   vector: { ...presets[0].vector },
   progress: 1,
   activePreset: presets[0].id,
+  motionMode: "matrix-morph",
   isPlaying: false,
   dragPointerId: null,
+  dragTarget: null,
   rafId: 0,
   lastFrameTime: 0,
   size: { width: 0, height: 0 },
@@ -65,6 +68,8 @@ const ctx = canvas.getContext("2d");
 
 const elements = {
   presetRow: document.getElementById("presetRow"),
+  modeButtons: Array.from(document.querySelectorAll(".mode-chip")),
+  modeHint: document.getElementById("modeHint"),
   playButton: document.getElementById("playButton"),
   progressSlider: document.getElementById("progressSlider"),
   progressValue: document.getElementById("progressValue"),
@@ -151,6 +156,23 @@ function wireEvents() {
     updateAll();
   });
 
+  elements.modeButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const nextMode = button.dataset.mode;
+      if (!nextMode) {
+        return;
+      }
+
+      if (nextMode === "geometric-action" && !supportsGeometricAction(state.matrix)) {
+        return;
+      }
+
+      state.motionMode = nextMode;
+      stopAnimation();
+      updateAll();
+    });
+  });
+
   elements.playButton.addEventListener("click", replayTransform);
 
   elements.identityButton.addEventListener("click", () => {
@@ -165,6 +187,7 @@ function wireEvents() {
   canvas.addEventListener("pointermove", handlePointerMove);
   canvas.addEventListener("pointerup", handlePointerUp);
   canvas.addEventListener("pointercancel", handlePointerUp);
+  canvas.addEventListener("pointerleave", handlePointerLeave);
 
   const resizeObserver = new ResizeObserver(() => resizeCanvas());
   resizeObserver.observe(canvas.parentElement);
@@ -192,6 +215,7 @@ function applyPreset(presetId) {
   state.vector = { ...preset.vector };
   state.activePreset = preset.id;
   ensureNonZeroVector();
+  canonicalizeMotionMode();
   syncInputsFromState();
   updateAll();
   if (!prefersReducedMotion.matches) {
@@ -239,26 +263,26 @@ function stopAnimation() {
 }
 
 function handlePointerDown(event) {
-  const tip = worldToScreen(state.vector);
-  const rect = canvas.getBoundingClientRect();
-  const dx = event.clientX - rect.left - tip.x;
-  const dy = event.clientY - rect.top - tip.y;
-
-  if (Math.hypot(dx, dy) > 26) {
+  const closestHandle = getClosestHandle(event);
+  if (!closestHandle) {
     return;
   }
 
   state.dragPointerId = event.pointerId;
+  state.dragTarget = closestHandle.target;
   canvas.setPointerCapture(event.pointerId);
-  updateVectorFromPointer(event);
+  setCanvasCursor("grabbing");
+  updateFromPointer(event);
 }
 
 function handlePointerMove(event) {
-  if (state.dragPointerId !== event.pointerId) {
+  if (state.dragPointerId === event.pointerId) {
+    setCanvasCursor("grabbing");
+    updateFromPointer(event);
     return;
   }
 
-  updateVectorFromPointer(event);
+  refreshCanvasCursor(event);
 }
 
 function handlePointerUp(event) {
@@ -267,8 +291,32 @@ function handlePointerUp(event) {
   }
 
   state.dragPointerId = null;
+  state.dragTarget = null;
   if (canvas.hasPointerCapture(event.pointerId)) {
     canvas.releasePointerCapture(event.pointerId);
+  }
+  refreshCanvasCursor(event);
+}
+
+function handlePointerLeave() {
+  if (state.dragPointerId === null) {
+    setCanvasCursor("crosshair");
+  }
+}
+
+function updateFromPointer(event) {
+  if (state.dragTarget === "vector") {
+    updateVectorFromPointer(event);
+    return;
+  }
+
+  if (state.dragTarget === "basis-e1") {
+    updateBasisVectorFromPointer(event, "e1");
+    return;
+  }
+
+  if (state.dragTarget === "basis-e2") {
+    updateBasisVectorFromPointer(event, "e2");
   }
 }
 
@@ -281,6 +329,63 @@ function updateVectorFromPointer(event) {
   stopAnimation();
   syncVectorInputs();
   updateAll();
+}
+
+function updateBasisVectorFromPointer(event, basisKey) {
+  const rect = canvas.getBoundingClientRect();
+  const next = screenToWorld(event.clientX - rect.left, event.clientY - rect.top);
+  const clamped = {
+    x: clamp(next.x, -WORLD_RANGE + 0.3, WORLD_RANGE - 0.3),
+    y: clamp(next.y, -WORLD_RANGE + 0.3, WORLD_RANGE - 0.3),
+  };
+
+  if (basisKey === "e1") {
+    state.matrix.a = clamped.x;
+    state.matrix.c = clamped.y;
+  } else {
+    state.matrix.b = clamped.x;
+    state.matrix.d = clamped.y;
+  }
+
+  state.progress = 1;
+  state.activePreset = null;
+  stopAnimation();
+  syncInputsFromState();
+  updateAll();
+}
+
+function getClosestHandle(event) {
+  const rect = canvas.getBoundingClientRect();
+  const currentMatrix = getAnimatedMatrix();
+  const handles = [
+    { target: "vector", point: state.vector },
+    { target: "basis-e1", point: { x: currentMatrix.a, y: currentMatrix.c } },
+    { target: "basis-e2", point: { x: currentMatrix.b, y: currentMatrix.d } },
+  ];
+
+  let closestHandle = null;
+  handles.forEach((handle) => {
+    const tip = worldToScreen(handle.point);
+    const distance = Math.hypot(event.clientX - rect.left - tip.x, event.clientY - rect.top - tip.y);
+    if (!closestHandle || distance < closestHandle.distance) {
+      closestHandle = { ...handle, distance };
+    }
+  });
+
+  if (!closestHandle || closestHandle.distance > DRAG_HANDLE_RADIUS) {
+    return null;
+  }
+
+  return closestHandle;
+}
+
+function refreshCanvasCursor(event) {
+  const hoveredHandle = getClosestHandle(event);
+  setCanvasCursor(hoveredHandle ? "grab" : "crosshair");
+}
+
+function setCanvasCursor(cursor) {
+  canvas.style.cursor = cursor;
 }
 
 function resizeCanvas() {
@@ -299,8 +404,10 @@ function resizeCanvas() {
 }
 
 function updateAll() {
+  canonicalizeMotionMode();
   syncInputsFromState();
   updatePresetButtons();
+  updateModeButtons();
   updateText();
   renderScene();
 }
@@ -327,9 +434,20 @@ function updatePresetButtons() {
   });
 }
 
+function updateModeButtons() {
+  const geometricAvailable = supportsGeometricAction(state.matrix);
+  elements.modeButtons.forEach((button) => {
+    const isActive = button.dataset.mode === state.motionMode;
+    const isDisabled = button.dataset.mode === "geometric-action" && !geometricAvailable;
+    button.classList.toggle("is-active", isActive);
+    button.disabled = isDisabled;
+    button.setAttribute("aria-pressed", String(isActive));
+  });
+}
+
 function updateText() {
   const eigenData = computeEigenData(state.matrix);
-  const currentMatrix = interpolateMatrix(state.matrix, state.progress);
+  const currentMatrix = getAnimatedMatrix();
   const image = applyMatrix(currentMatrix, state.vector);
   const drift = computeSpanDrift(state.vector, image);
   const alongScale = dot(state.vector, image) / Math.max(dot(state.vector, state.vector), EPSILON);
@@ -355,6 +473,7 @@ function updateText() {
   elements.eigenSummary.innerHTML = buildEigenSummary(eigenData);
   elements.eigenDetails.innerHTML = buildEigenDetails(eigenData);
 
+  elements.modeHint.textContent = buildModeHint();
   elements.noticeText.textContent = buildNoticeText(eigenData, drift, alongScale, slip);
   elements.canvasNote.textContent = buildCanvasNote(eigenData, drift);
 }
@@ -365,7 +484,7 @@ function renderScene() {
   }
 
   const { width, height } = state.size;
-  const currentMatrix = interpolateMatrix(state.matrix, state.progress);
+  const currentMatrix = getAnimatedMatrix();
   const finalEigenData = computeEigenData(state.matrix);
   const image = applyMatrix(currentMatrix, state.vector);
   const projectionScale = dot(state.vector, image) / Math.max(dot(state.vector, state.vector), EPSILON);
@@ -510,13 +629,29 @@ function drawBasisVectors(matrix) {
     color: "rgba(36, 121, 111, 0.95)",
     width: 2.2,
     label: "T(e1)",
-    headSize: 10,
+    headSize: 14,
   });
   drawArrow(e2, {
     color: "rgba(95, 135, 199, 0.95)",
     width: 2.2,
     label: "T(e2)",
-    headSize: 10,
+    headSize: 14,
+  });
+  drawHandle(e1, {
+    fill: "rgba(36, 121, 111, 0.98)",
+    radius: 7.8,
+  });
+  drawHandle(e2, {
+    fill: "rgba(95, 135, 199, 0.98)",
+    radius: 7.8,
+  });
+  drawArrowHead(e1, {
+    color: "rgba(36, 121, 111, 0.95)",
+    headSize: 14,
+  });
+  drawArrowHead(e2, {
+    color: "rgba(95, 135, 199, 0.95)",
+    headSize: 14,
   });
 }
 
@@ -536,10 +671,6 @@ function drawProjection(projected, image) {
 
 function drawArrow(vector, options) {
   const start = worldToScreen({ x: 0, y: 0 });
-  const end = worldToScreen(vector);
-  const direction = normalize(vector);
-  const angle = Math.atan2(end.y - start.y, end.x - start.x);
-  const headSize = options.headSize || 10;
 
   ctx.save();
   ctx.strokeStyle = options.color;
@@ -547,9 +678,31 @@ function drawArrow(vector, options) {
   ctx.lineWidth = options.width;
   ctx.beginPath();
   ctx.moveTo(start.x, start.y);
-  ctx.lineTo(end.x, end.y);
+  ctx.lineTo(worldToScreen(vector).x, worldToScreen(vector).y);
   ctx.stroke();
+  drawArrowHead(vector, options);
 
+  if (options.label && length(vector) > EPSILON) {
+    const direction = normalize(vector);
+    const labelPoint = add(vector, scale(direction, 0.35));
+    drawTag(labelPoint, options.label, "rgba(255, 255, 255, 0.82)");
+  }
+
+  ctx.restore();
+}
+
+function drawArrowHead(vector, options) {
+  if (length(vector) < EPSILON) {
+    return;
+  }
+
+  const start = worldToScreen({ x: 0, y: 0 });
+  const end = worldToScreen(vector);
+  const angle = Math.atan2(end.y - start.y, end.x - start.x);
+  const headSize = options.headSize || 10;
+
+  ctx.save();
+  ctx.fillStyle = options.color;
   ctx.beginPath();
   ctx.moveTo(end.x, end.y);
   ctx.lineTo(
@@ -562,23 +715,17 @@ function drawArrow(vector, options) {
   );
   ctx.closePath();
   ctx.fill();
-
-  if (options.label && length(vector) > EPSILON) {
-    const labelPoint = add(vector, scale(direction, 0.35));
-    drawTag(labelPoint, options.label, "rgba(255, 255, 255, 0.82)");
-  }
-
   ctx.restore();
 }
 
-function drawHandle(point) {
+function drawHandle(point, options = {}) {
   const screen = worldToScreen(point);
   ctx.save();
-  ctx.fillStyle = "rgba(216, 154, 34, 1)";
+  ctx.fillStyle = options.fill || "rgba(216, 154, 34, 1)";
   ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
   ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.arc(screen.x, screen.y, 8.5, 0, Math.PI * 2);
+  ctx.arc(screen.x, screen.y, options.radius || 8.5, 0, Math.PI * 2);
   ctx.fill();
   ctx.stroke();
   ctx.restore();
@@ -808,6 +955,14 @@ function buildEigenDetails(eigenData) {
 }
 
 function buildNoticeText(eigenData, drift, alongScale, slip) {
+  if (supportsGeometricAction(state.matrix) && state.motionMode === "geometric-action") {
+    return "Geometric action is active: the plane is rotating by angle rather than blending matrix entries, so the unit circle keeps radius 1 throughout the motion.";
+  }
+
+  if (supportsGeometricAction(state.matrix) && state.motionMode === "matrix-morph") {
+    return "Matrix morph is active: the coefficients are blending from I to A, so this path briefly introduces scaling even though the final matrix is a pure rotation.";
+  }
+
   if (!eigenData.real) {
     return "The orange image always slides off the gold guide here. Rotation dominates, so the invariant directions only appear after extending the problem into the complex plane.";
   }
@@ -832,6 +987,14 @@ function buildNoticeText(eigenData, drift, alongScale, slip) {
 
 function buildCanvasNote(eigenData, drift) {
   const progressPercent = Math.round(state.progress * 100);
+  if (supportsGeometricAction(state.matrix) && state.motionMode === "geometric-action") {
+    return `t = ${progressPercent}%. Geometric action rotates by angle directly, so the unit circle stays radius 1 while the plane turns toward the target rotation.`;
+  }
+
+  if (supportsGeometricAction(state.matrix) && state.motionMode === "matrix-morph") {
+    return `t = ${progressPercent}%. Matrix morph blends entries from I to A, so the circle can shrink mid-path even though the destination is a pure rotation.`;
+  }
+
   if (!eigenData.real) {
     return `t = ${progressPercent}%. The dashed gold line is only a probe span now; no real eigenline exists for the target matrix.`;
   }
@@ -871,6 +1034,24 @@ function interpolateMatrix(matrix, progress) {
     b: progress * matrix.b,
     c: progress * matrix.c,
     d: 1 + progress * (matrix.d - 1),
+  };
+}
+
+function getAnimatedMatrix() {
+  if (state.motionMode === "geometric-action" && supportsGeometricAction(state.matrix)) {
+    return interpolateRotationMatrix(state.matrix, state.progress);
+  }
+
+  return interpolateMatrix(state.matrix, state.progress);
+}
+
+function interpolateRotationMatrix(matrix, progress) {
+  const angle = Math.atan2(matrix.c, matrix.a) * progress;
+  return {
+    a: Math.cos(angle),
+    b: -Math.sin(angle),
+    c: Math.sin(angle),
+    d: Math.cos(angle),
   };
 }
 
@@ -933,6 +1114,39 @@ function bindNumericInput(input, onCommit) {
       input.blur();
     }
   });
+}
+
+function buildModeHint() {
+  if (supportsGeometricAction(state.matrix)) {
+    if (state.motionMode === "geometric-action") {
+      return "Geometric action is showing the clean rotational story: lengths stay fixed while angles advance toward the target matrix.";
+    }
+
+    return "Matrix morph is showing the coefficient path from I to A. Switch to Geometric action to compare it with a true rotation.";
+  }
+
+  return "Geometric action is only enabled for pure rotations. This matrix is currently shown as a matrix morph.";
+}
+
+function supportsGeometricAction(matrix) {
+  const determinant = matrix.a * matrix.d - matrix.b * matrix.c;
+  const column1Length = Math.hypot(matrix.a, matrix.c);
+  const column2Length = Math.hypot(matrix.b, matrix.d);
+  const dotProduct = matrix.a * matrix.b + matrix.c * matrix.d;
+  const tolerance = 0.03;
+
+  return (
+    Math.abs(determinant - 1) < tolerance &&
+    Math.abs(column1Length - 1) < tolerance &&
+    Math.abs(column2Length - 1) < tolerance &&
+    Math.abs(dotProduct) < tolerance
+  );
+}
+
+function canonicalizeMotionMode() {
+  if (state.motionMode === "geometric-action" && !supportsGeometricAction(state.matrix)) {
+    state.motionMode = "matrix-morph";
+  }
 }
 
 function formatNumber(value) {

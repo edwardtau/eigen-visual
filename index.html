@@ -70,6 +70,20 @@
                 </div>
                 <p id="modeHint" class="mode-hint"></p>
               </div>
+
+              <div class="overlay-control" aria-label="Clock label overlays">
+                <span class="toolbar-label">Clock labels</span>
+                <div class="overlay-row">
+                  <label class="overlay-toggle overlay-toggle--reference">
+                    <input id="showReferenceClock" type="checkbox" />
+                    <span>Reference circle</span>
+                  </label>
+                  <label class="overlay-toggle overlay-toggle--transform">
+                    <input id="showTransformedClock" type="checkbox" />
+                    <span>Transformed plane</span>
+                  </label>
+                </div>
+              </div>
             </div>
 
             <div class="toolbar-group toolbar-group--compact">
@@ -128,19 +142,19 @@
 
             <div class="matrix-shell">
               <div class="matrix-grid">
-                <label>
+                <label class="matrix-entry matrix-entry--e1">
                   <span class="sr-only">Matrix entry a</span>
                   <input id="input-a" type="number" step="0.1" value="3" />
                 </label>
-                <label>
+                <label class="matrix-entry matrix-entry--e2">
                   <span class="sr-only">Matrix entry b</span>
                   <input id="input-b" type="number" step="0.1" value="1" />
                 </label>
-                <label>
+                <label class="matrix-entry matrix-entry--e1">
                   <span class="sr-only">Matrix entry c</span>
                   <input id="input-c" type="number" step="0.1" value="0" />
                 </label>
-                <label>
+                <label class="matrix-entry matrix-entry--e2">
                   <span class="sr-only">Matrix entry d</span>
                   <input id="input-d" type="number" step="0.1" value="2" />
                 </label>

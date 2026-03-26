@@ -211,6 +211,44 @@ canvas {
   gap: 0.45rem;
 }
 
+.overlay-control {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.overlay-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.overlay-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2rem;
+  padding: 0.38rem 0.72rem;
+  border-radius: 999px;
+  border: 1px solid rgba(22, 37, 51, 0.08);
+  background: rgba(22, 37, 51, 0.05);
+  color: var(--ink);
+  font-size: 0.8rem;
+  line-height: 1.1;
+}
+
+.overlay-toggle--reference {
+  border-color: rgba(22, 37, 51, 0.18);
+}
+
+.overlay-toggle--transform {
+  border-color: rgba(95, 135, 199, 0.28);
+}
+
+.overlay-toggle input[type="checkbox"] {
+  margin: 0;
+  accent-color: var(--coral);
+}
+
 .preset-chip,
 button {
   border: 0;
@@ -473,6 +511,24 @@ button {
 .matrix-grid label {
   display: grid;
   gap: 0.35rem;
+}
+
+.matrix-entry input[type="number"] {
+  border-width: 1.5px;
+}
+
+.matrix-entry--e1 input[type="number"] {
+  border-color: rgba(25, 98, 89, 0.8);
+  background:
+    linear-gradient(180deg, rgba(36, 121, 111, 0.24), rgba(255, 255, 255, 0.96));
+  box-shadow: inset 0 0 0 1px rgba(25, 98, 89, 0.2);
+}
+
+.matrix-entry--e2 input[type="number"] {
+  border-color: rgba(70, 111, 177, 0.82);
+  background:
+    linear-gradient(180deg, rgba(95, 135, 199, 0.24), rgba(255, 255, 255, 0.96));
+  box-shadow: inset 0 0 0 1px rgba(70, 111, 177, 0.2);
 }
 
 .vector-grid span {

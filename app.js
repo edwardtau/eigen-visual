@@ -55,6 +55,8 @@ const state = {
   progress: 1,
   activePreset: presets[0].id,
   motionMode: "matrix-morph",
+  showReferenceClock: false,
+  showTransformedClock: false,
   isPlaying: false,
   dragPointerId: null,
   dragTarget: null,
@@ -74,6 +76,8 @@ const elements = {
   progressSlider: document.getElementById("progressSlider"),
   progressValue: document.getElementById("progressValue"),
   identityButton: document.getElementById("identityButton"),
+  showReferenceClock: document.getElementById("showReferenceClock"),
+  showTransformedClock: document.getElementById("showTransformedClock"),
   inputs: {
     a: document.getElementById("input-a"),
     b: document.getElementById("input-b"),
@@ -171,6 +175,16 @@ function wireEvents() {
       stopAnimation();
       updateAll();
     });
+  });
+
+  elements.showReferenceClock.addEventListener("change", (event) => {
+    state.showReferenceClock = event.target.checked;
+    updateAll();
+  });
+
+  elements.showTransformedClock.addEventListener("change", (event) => {
+    state.showTransformedClock = event.target.checked;
+    updateAll();
   });
 
   elements.playButton.addEventListener("click", replayTransform);
@@ -420,6 +434,8 @@ function syncInputsFromState() {
   syncVectorInputs();
   elements.progressSlider.value = String(Math.round(state.progress * 100));
   elements.progressValue.textContent = `${Math.round(state.progress * 100)}%`;
+  elements.showReferenceClock.checked = state.showReferenceClock;
+  elements.showTransformedClock.checked = state.showTransformedClock;
 }
 
 function syncVectorInputs() {
@@ -504,7 +520,6 @@ function renderScene() {
     lineWidth: 1,
     axisWidth: 1.9,
   });
-
   drawUnitCircle(currentMatrix, {
     fill: "rgba(95, 135, 199, 0.18)",
     stroke: "rgba(95, 135, 199, 0.82)",
@@ -517,6 +532,22 @@ function renderScene() {
     lineWidth: 1.3,
     axisWidth: 2.5,
   });
+
+  if (state.showReferenceClock) {
+    drawClockNumbers({ a: 1, b: 0, c: 0, d: 1 }, {
+      fill: "rgba(22, 37, 51, 0.78)",
+      halo: "rgba(255, 252, 247, 0.95)",
+      transformGlyphs: false,
+    });
+  }
+
+  if (state.showTransformedClock) {
+    drawClockNumbers(currentMatrix, {
+      fill: "rgba(70, 111, 177, 0.96)",
+      halo: "rgba(255, 252, 247, 0.9)",
+      transformGlyphs: true,
+    });
+  }
 
   drawEigenlines(finalEigenData);
   drawProbeGuide(state.vector);
@@ -580,6 +611,138 @@ function drawUnitCircle(matrix, style) {
   ctx.fill();
   ctx.stroke();
   ctx.restore();
+}
+
+function drawClockNumbers(matrix, style) {
+  const scalePixels = getWorldScalePixels();
+  const fontSizePixels = 12;
+  const haloWidthPixels = 3.4;
+  const circlePaddingPixels = 3;
+  const fontFamily = '"Avenir Next", "Segoe UI", sans-serif';
+
+  ctx.save();
+  ctx.font = `600 ${fontSizePixels}px ${fontFamily}`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "alphabetic";
+
+  if (style.transformGlyphs) {
+    const fontSizeWorld = fontSizePixels / scalePixels;
+    const haloWidthWorld = haloWidthPixels / scalePixels;
+    const center = worldToScreen({ x: 0, y: 0 });
+
+    for (let hour = 1; hour <= 12; hour += 1) {
+      const layout = getClockLabelLayout(hour, {
+        scalePixels,
+        paddingPixels: circlePaddingPixels + haloWidthPixels * 0.5,
+      });
+      const anchor = applyMatrix(matrix, layout.center);
+
+      ctx.save();
+      ctx.translate(center.x, center.y);
+      ctx.scale(scalePixels, -scalePixels);
+      ctx.transform(matrix.a, matrix.c, matrix.b, matrix.d, anchor.x, anchor.y);
+      // Canvas text uses y-down glyph coordinates; flip once here so the
+      // world-to-screen y inversion does not introduce an extra mirror.
+      ctx.scale(1, -1);
+      ctx.font = `600 ${fontSizeWorld}px ${fontFamily}`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "alphabetic";
+      ctx.lineWidth = haloWidthWorld;
+      ctx.strokeStyle = style.halo;
+      ctx.fillStyle = style.fill;
+      ctx.strokeText(
+        layout.label,
+        layout.textOffsetWorld.x,
+        layout.textOffsetWorld.y
+      );
+      ctx.fillText(
+        layout.label,
+        layout.textOffsetWorld.x,
+        layout.textOffsetWorld.y
+      );
+      ctx.restore();
+    }
+
+    ctx.restore();
+    return;
+  }
+
+  ctx.lineWidth = haloWidthPixels;
+  ctx.strokeStyle = style.halo;
+  ctx.fillStyle = style.fill;
+
+  for (let hour = 1; hour <= 12; hour += 1) {
+    const layout = getClockLabelLayout(hour, {
+      scalePixels,
+      paddingPixels: circlePaddingPixels + haloWidthPixels * 0.5,
+    });
+    const screen = worldToScreen(applyMatrix(matrix, layout.center));
+    ctx.strokeText(
+      layout.label,
+      screen.x + layout.textOffsetPixels.x,
+      screen.y + layout.textOffsetPixels.y
+    );
+    ctx.fillText(
+      layout.label,
+      screen.x + layout.textOffsetPixels.x,
+      screen.y + layout.textOffsetPixels.y
+    );
+  }
+
+  ctx.restore();
+}
+
+function getClockLabelLayout(hour, options) {
+  const angle = Math.PI / 2 - ((hour % 12) * Math.PI) / 6;
+  const label = String(hour);
+  const metrics = ctx.measureText(label);
+  const bounds = getTextPlacementBounds(metrics, options.scalePixels);
+  const unit = { x: Math.cos(angle), y: Math.sin(angle) };
+  const radialExtent = Math.abs(unit.x) * bounds.halfWidth + Math.abs(unit.y) * bounds.halfHeight;
+  const paddingWorld = options.paddingPixels / options.scalePixels;
+  const radius = Math.max(0, 1 - paddingWorld - radialExtent);
+
+  return {
+    label,
+    center: {
+      x: radius * unit.x,
+      y: radius * unit.y,
+    },
+    textOffsetPixels: bounds.alignOffsetPixels,
+    textOffsetWorld: bounds.alignOffsetWorld,
+  };
+}
+
+function getTextPlacementBounds(metrics, scalePixels) {
+  const fallbackHalfWidthPixels = metrics.width * 0.5;
+  const fallbackHalfHeightPixels =
+    ((metrics.actualBoundingBoxAscent || 0) + (metrics.actualBoundingBoxDescent || 0)) * 0.5 ||
+    6;
+  const leftPixels = Number.isFinite(metrics.actualBoundingBoxLeft)
+    ? metrics.actualBoundingBoxLeft
+    : fallbackHalfWidthPixels;
+  const rightPixels = Number.isFinite(metrics.actualBoundingBoxRight)
+    ? metrics.actualBoundingBoxRight
+    : fallbackHalfWidthPixels;
+  const topPixels = Number.isFinite(metrics.actualBoundingBoxAscent)
+    ? metrics.actualBoundingBoxAscent
+    : fallbackHalfHeightPixels;
+  const bottomPixels = Number.isFinite(metrics.actualBoundingBoxDescent)
+    ? metrics.actualBoundingBoxDescent
+    : fallbackHalfHeightPixels;
+
+  return {
+    halfWidth: (leftPixels + rightPixels) * 0.5 / scalePixels,
+    halfHeight: (topPixels + bottomPixels) * 0.5 / scalePixels,
+    alignOffsetPixels: {
+      x: (leftPixels - rightPixels) * 0.5,
+      y: (topPixels - bottomPixels) * 0.5,
+    },
+    alignOffsetWorld: {
+      x: (leftPixels - rightPixels) * 0.5 / scalePixels,
+      y: (topPixels - bottomPixels) * 0.5 / scalePixels,
+    },
+  };
 }
 
 function drawEigenlines(eigenData) {
@@ -1067,7 +1230,7 @@ function computeSpanDrift(a, b) {
 }
 
 function worldToScreen(point) {
-  const scalePixels = Math.min(state.size.width, state.size.height) / (WORLD_RANGE * 2);
+  const scalePixels = getWorldScalePixels();
   return {
     x: state.size.width / 2 + point.x * scalePixels,
     y: state.size.height / 2 - point.y * scalePixels,
@@ -1075,11 +1238,15 @@ function worldToScreen(point) {
 }
 
 function screenToWorld(x, y) {
-  const scalePixels = Math.min(state.size.width, state.size.height) / (WORLD_RANGE * 2);
+  const scalePixels = getWorldScalePixels();
   return {
     x: (x - state.size.width / 2) / scalePixels,
     y: -(y - state.size.height / 2) / scalePixels,
   };
+}
+
+function getWorldScalePixels() {
+  return Math.min(state.size.width, state.size.height) / (WORLD_RANGE * 2);
 }
 
 function ensureNonZeroVector() {

@@ -4,7 +4,7 @@ A small no-build web app for visualizing eigenvalues and eigenvectors in the spi
 
 ## Run it
 
-From `/Users/edward/Source/eigen-visual`:
+From `~/eigen-visual`:
 
 ```bash
 python3 -m http.server 8000

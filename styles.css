@@ -13,12 +13,312 @@
   --coral: #cc674f;
   --eigen: #cd5f41;
   --shadow: 0 20px 50px rgba(76, 49, 17, 0.14);
+  --body-glow: rgba(255, 253, 248, 0.94);
+  --body-start: #fff7ea;
+  --body-end: #dcc39a;
+  --body-pattern-x: rgba(255, 255, 255, 0.22);
+  --body-pattern-y: rgba(255, 255, 255, 0.18);
+  --card-border: rgba(255, 255, 255, 0.65);
+  --metric-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(249, 238, 220, 0.98));
+  --control-bg: rgba(22, 37, 51, 0.06);
+  --control-bg-strong: rgba(22, 37, 51, 0.1);
+  --field-bg: rgba(255, 255, 255, 0.94);
+  --chip-bg: rgba(22, 37, 51, 0.08);
+  --mode-chip-bg: rgba(22, 37, 51, 0.07);
+  --active-chip-start: var(--teal);
+  --active-chip-end: #2f9184;
+  --mode-active-start: #183144;
+  --mode-active-end: #3a6480;
+  --primary-end: #de8267;
+  --canvas-bg: radial-gradient(circle at 22% 15%, rgba(255, 255, 255, 0.78), transparent 20rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.48), rgba(224, 205, 168, 0.94));
+  --canvas-note-bg: rgba(255, 252, 247, 0.92);
+  --canvas-backdrop-start: rgba(255, 255, 255, 0.18);
+  --canvas-backdrop-end: rgba(216, 191, 146, 0.26);
+  --reference-circle-fill: rgba(255, 255, 255, 0.18);
+  --reference-circle-stroke: rgba(22, 37, 51, 0.22);
+  --reference-grid-line: rgba(22, 37, 51, 0.18);
+  --reference-grid-axis: rgba(22, 37, 51, 0.42);
+  --transform-circle-fill: rgba(95, 135, 199, 0.18);
+  --transform-circle-stroke: rgba(95, 135, 199, 0.82);
+  --transform-grid-line: rgba(36, 121, 111, 0.86);
+  --transform-grid-axis: rgba(25, 98, 89, 1);
+  --clock-reference-fill: rgba(22, 37, 51, 0.78);
+  --clock-reference-halo: rgba(255, 252, 247, 0.95);
+  --clock-transform-fill: rgba(70, 111, 177, 0.96);
+  --clock-transform-halo: rgba(255, 252, 247, 0.9);
+  --basis-e1: rgba(36, 121, 111, 0.95);
+  --basis-e1-handle: rgba(36, 121, 111, 0.98);
+  --basis-e2: rgba(95, 135, 199, 0.95);
+  --basis-e2-handle: rgba(95, 135, 199, 0.98);
+  --probe-line: rgba(216, 154, 34, 0.92);
+  --probe-arrow: rgba(216, 154, 34, 0.72);
+  --probe-handle: rgba(216, 154, 34, 1);
+  --image-arrow: rgba(204, 103, 79, 0.96);
+  --eigen-line: rgba(205, 95, 65, 0.95);
+  --eigen-line-soft: rgba(205, 95, 65, 0.42);
+  --eigen-tag-bg: rgba(205, 95, 65, 0.12);
+  --projection-line: rgba(22, 37, 51, 0.4);
+  --tag-bg: rgba(255, 255, 255, 0.82);
+  --tag-ink: rgba(18, 32, 44, 0.95);
+  --handle-stroke: rgba(255, 255, 255, 0.95);
+  --origin-fill: rgba(22, 37, 51, 0.8);
   --radius-lg: 28px;
   --radius-md: 20px;
   --radius-sm: 14px;
   --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia,
     serif;
   --font-ui: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+}
+
+body[data-scheme="dark"] {
+  --paper: #111820;
+  --paper-deep: #05070b;
+  --panel: rgba(16, 23, 32, 0.95);
+  --ink: #f0f6ff;
+  --muted: #a8b6c9;
+  --line: rgba(221, 235, 255, 0.14);
+  --teal: #55d6c2;
+  --teal-soft: rgba(85, 214, 194, 0.16);
+  --sky: #8fb7ff;
+  --sky-soft: rgba(143, 183, 255, 0.18);
+  --gold: #ffd166;
+  --coral: #ff7a6e;
+  --eigen: #ff8d66;
+  --shadow: 0 20px 50px rgba(0, 0, 0, 0.38);
+  --body-glow: rgba(75, 119, 158, 0.2);
+  --body-start: #17202b;
+  --body-end: #05070b;
+  --body-pattern-x: rgba(255, 255, 255, 0.08);
+  --body-pattern-y: rgba(255, 255, 255, 0.06);
+  --card-border: rgba(255, 255, 255, 0.12);
+  --metric-bg: linear-gradient(180deg, rgba(30, 43, 59, 0.96), rgba(16, 23, 32, 0.98));
+  --control-bg: rgba(255, 255, 255, 0.07);
+  --control-bg-strong: rgba(255, 255, 255, 0.1);
+  --field-bg: rgba(8, 12, 18, 0.92);
+  --chip-bg: rgba(255, 255, 255, 0.08);
+  --mode-chip-bg: rgba(255, 255, 255, 0.07);
+  --active-chip-start: #1da99a;
+  --active-chip-end: #2ed4bd;
+  --mode-active-start: #27507a;
+  --mode-active-end: #4a77c7;
+  --primary-end: #ff9f8a;
+  --canvas-bg: linear-gradient(180deg, rgba(16, 24, 34, 0.98), rgba(5, 8, 13, 0.96));
+  --canvas-note-bg: rgba(8, 12, 18, 0.86);
+  --canvas-backdrop-start: rgba(59, 87, 114, 0.16);
+  --canvas-backdrop-end: rgba(5, 8, 13, 0.2);
+  --reference-circle-fill: rgba(255, 255, 255, 0.06);
+  --reference-circle-stroke: rgba(220, 235, 255, 0.24);
+  --reference-grid-line: rgba(220, 235, 255, 0.13);
+  --reference-grid-axis: rgba(220, 235, 255, 0.36);
+  --transform-circle-fill: rgba(143, 183, 255, 0.13);
+  --transform-circle-stroke: rgba(143, 183, 255, 0.86);
+  --transform-grid-line: rgba(85, 214, 194, 0.66);
+  --transform-grid-axis: rgba(85, 214, 194, 0.96);
+  --clock-reference-fill: rgba(238, 246, 255, 0.84);
+  --clock-reference-halo: rgba(5, 8, 13, 0.88);
+  --clock-transform-fill: rgba(143, 183, 255, 0.98);
+  --clock-transform-halo: rgba(5, 8, 13, 0.9);
+  --basis-e1: rgba(85, 214, 194, 0.95);
+  --basis-e1-handle: rgba(85, 214, 194, 0.98);
+  --basis-e2: rgba(143, 183, 255, 0.95);
+  --basis-e2-handle: rgba(143, 183, 255, 0.98);
+  --probe-line: rgba(255, 209, 102, 0.9);
+  --probe-arrow: rgba(255, 209, 102, 0.78);
+  --probe-handle: rgba(255, 209, 102, 1);
+  --image-arrow: rgba(255, 122, 110, 0.98);
+  --eigen-line: rgba(255, 141, 102, 0.96);
+  --eigen-line-soft: rgba(255, 141, 102, 0.44);
+  --eigen-tag-bg: rgba(255, 141, 102, 0.14);
+  --projection-line: rgba(238, 246, 255, 0.42);
+  --tag-bg: rgba(7, 10, 15, 0.82);
+  --tag-ink: rgba(240, 246, 255, 0.96);
+  --handle-stroke: rgba(8, 12, 18, 0.95);
+  --origin-fill: rgba(240, 246, 255, 0.88);
+}
+
+body[data-scheme="halloween"] {
+  --paper: #211514;
+  --paper-deep: #0e0908;
+  --panel: rgba(37, 24, 20, 0.94);
+  --ink: #fff3dc;
+  --muted: #d6bba1;
+  --teal: #62c184;
+  --sky: #b783ff;
+  --gold: #ffb000;
+  --coral: #ff6a00;
+  --eigen: #f04f2f;
+  --shadow: 0 20px 50px rgba(20, 8, 3, 0.36);
+  --body-glow: rgba(255, 106, 0, 0.18);
+  --body-start: #2d1811;
+  --body-end: #0e0908;
+  --body-pattern-x: rgba(255, 176, 0, 0.08);
+  --body-pattern-y: rgba(98, 193, 132, 0.06);
+  --card-border: rgba(255, 176, 0, 0.18);
+  --metric-bg: linear-gradient(180deg, rgba(54, 32, 24, 0.97), rgba(34, 20, 18, 0.98));
+  --control-bg: rgba(255, 176, 0, 0.08);
+  --control-bg-strong: rgba(255, 176, 0, 0.13);
+  --field-bg: rgba(19, 12, 10, 0.9);
+  --chip-bg: rgba(255, 176, 0, 0.1);
+  --mode-chip-bg: rgba(183, 131, 255, 0.1);
+  --active-chip-start: #2e9d61;
+  --active-chip-end: #80d36f;
+  --mode-active-start: #3d245f;
+  --mode-active-end: #9b65ff;
+  --primary-end: #ff9a18;
+  --canvas-bg: linear-gradient(180deg, rgba(43, 26, 18, 0.98), rgba(14, 9, 8, 0.95));
+  --canvas-note-bg: rgba(24, 15, 12, 0.88);
+  --canvas-backdrop-start: rgba(255, 176, 0, 0.12);
+  --canvas-backdrop-end: rgba(255, 106, 0, 0.14);
+  --reference-circle-fill: rgba(255, 243, 220, 0.08);
+  --reference-circle-stroke: rgba(255, 243, 220, 0.25);
+  --reference-grid-line: rgba(255, 243, 220, 0.14);
+  --reference-grid-axis: rgba(255, 176, 0, 0.4);
+  --transform-circle-fill: rgba(183, 131, 255, 0.14);
+  --transform-circle-stroke: rgba(183, 131, 255, 0.84);
+  --transform-grid-line: rgba(98, 193, 132, 0.74);
+  --transform-grid-axis: rgba(98, 193, 132, 1);
+  --clock-reference-fill: rgba(255, 243, 220, 0.88);
+  --clock-reference-halo: rgba(14, 9, 8, 0.92);
+  --clock-transform-fill: rgba(183, 131, 255, 0.98);
+  --clock-transform-halo: rgba(14, 9, 8, 0.9);
+  --basis-e1: rgba(98, 193, 132, 0.96);
+  --basis-e1-handle: rgba(98, 193, 132, 0.98);
+  --basis-e2: rgba(183, 131, 255, 0.96);
+  --basis-e2-handle: rgba(183, 131, 255, 0.98);
+  --probe-line: rgba(255, 176, 0, 0.92);
+  --probe-arrow: rgba(255, 176, 0, 0.78);
+  --probe-handle: rgba(255, 176, 0, 1);
+  --image-arrow: rgba(255, 106, 0, 0.98);
+  --eigen-line: rgba(240, 79, 47, 0.96);
+  --eigen-line-soft: rgba(240, 79, 47, 0.46);
+  --eigen-tag-bg: rgba(240, 79, 47, 0.16);
+  --projection-line: rgba(255, 243, 220, 0.42);
+  --tag-bg: rgba(14, 9, 8, 0.84);
+  --tag-ink: rgba(255, 243, 220, 0.96);
+  --handle-stroke: rgba(14, 9, 8, 0.95);
+  --origin-fill: rgba(255, 243, 220, 0.88);
+}
+
+body[data-scheme="pastel"] {
+  --paper: #f9edf4;
+  --paper-deep: #d6edf4;
+  --panel: rgba(255, 250, 253, 0.94);
+  --ink: #2b3440;
+  --muted: #667080;
+  --teal: #73c6b6;
+  --sky: #8ea8e8;
+  --gold: #f1bf72;
+  --coral: #ef8b9a;
+  --eigen: #df7387;
+  --shadow: 0 20px 50px rgba(83, 72, 101, 0.12);
+  --body-glow: rgba(255, 255, 255, 0.92);
+  --body-start: #fff7fb;
+  --body-end: #d8edf6;
+  --body-pattern-x: rgba(115, 198, 182, 0.14);
+  --body-pattern-y: rgba(142, 168, 232, 0.12);
+  --metric-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(246, 235, 246, 0.98));
+  --field-bg: rgba(255, 255, 255, 0.96);
+  --active-chip-start: #73c6b6;
+  --active-chip-end: #9dd7c6;
+  --mode-active-start: #637fce;
+  --mode-active-end: #b875c9;
+  --primary-end: #f4a6af;
+  --canvas-bg: linear-gradient(180deg, rgba(255, 250, 253, 0.9), rgba(219, 239, 247, 0.94));
+  --canvas-backdrop-start: rgba(255, 255, 255, 0.26);
+  --canvas-backdrop-end: rgba(216, 237, 246, 0.34);
+  --reference-grid-line: rgba(43, 52, 64, 0.15);
+  --reference-grid-axis: rgba(43, 52, 64, 0.36);
+  --transform-circle-fill: rgba(142, 168, 232, 0.16);
+  --transform-circle-stroke: rgba(142, 168, 232, 0.86);
+  --transform-grid-line: rgba(115, 198, 182, 0.76);
+  --transform-grid-axis: rgba(88, 169, 153, 0.96);
+  --clock-transform-fill: rgba(98, 124, 204, 0.96);
+  --basis-e1: rgba(88, 169, 153, 0.95);
+  --basis-e1-handle: rgba(88, 169, 153, 0.98);
+  --basis-e2: rgba(98, 124, 204, 0.95);
+  --basis-e2-handle: rgba(98, 124, 204, 0.98);
+  --probe-line: rgba(224, 153, 59, 0.9);
+  --probe-arrow: rgba(224, 153, 59, 0.76);
+  --probe-handle: rgba(224, 153, 59, 1);
+  --image-arrow: rgba(224, 105, 125, 0.96);
+}
+
+body[data-scheme="retro"] {
+  --paper: #f3e6bd;
+  --paper-deep: #9bb1a5;
+  --panel: rgba(255, 246, 211, 0.94);
+  --ink: #24333a;
+  --muted: #59645a;
+  --teal: #008b84;
+  --sky: #315f9f;
+  --gold: #e0a11b;
+  --coral: #c94d28;
+  --eigen: #b83a2d;
+  --body-glow: rgba(255, 249, 225, 0.88);
+  --body-start: #f7e6ad;
+  --body-end: #8fa99e;
+  --body-pattern-x: rgba(36, 51, 58, 0.1);
+  --body-pattern-y: rgba(36, 51, 58, 0.08);
+  --metric-bg: linear-gradient(180deg, rgba(255, 249, 225, 0.95), rgba(238, 220, 166, 0.98));
+  --active-chip-start: #008b84;
+  --active-chip-end: #17a398;
+  --mode-active-start: #24333a;
+  --mode-active-end: #315f9f;
+  --primary-end: #dd6a2d;
+  --canvas-bg: linear-gradient(180deg, rgba(255, 246, 211, 0.82), rgba(156, 178, 164, 0.86));
+  --canvas-backdrop-start: rgba(255, 246, 211, 0.16);
+  --canvas-backdrop-end: rgba(40, 71, 70, 0.16);
+  --transform-circle-fill: rgba(49, 95, 159, 0.15);
+  --transform-circle-stroke: rgba(49, 95, 159, 0.88);
+  --transform-grid-line: rgba(0, 139, 132, 0.78);
+  --transform-grid-axis: rgba(0, 114, 108, 0.98);
+  --clock-transform-fill: rgba(49, 95, 159, 0.96);
+  --basis-e1: rgba(0, 139, 132, 0.95);
+  --basis-e1-handle: rgba(0, 139, 132, 0.98);
+  --basis-e2: rgba(49, 95, 159, 0.95);
+  --basis-e2-handle: rgba(49, 95, 159, 0.98);
+}
+
+body[data-scheme="rainbow"] {
+  --paper: #f6f9ff;
+  --paper-deep: #d8f2e7;
+  --panel: rgba(255, 255, 255, 0.92);
+  --ink: #16212f;
+  --muted: #536273;
+  --teal: #00a58e;
+  --sky: #4d7df7;
+  --gold: #f6b900;
+  --coral: #f45d74;
+  --eigen: #ea4d35;
+  --shadow: 0 20px 50px rgba(56, 80, 127, 0.14);
+  --body-glow: rgba(255, 255, 255, 0.9);
+  --body-start: #fff8dc;
+  --body-end: #d9f4ff;
+  --body-pattern-x: rgba(0, 165, 142, 0.12);
+  --body-pattern-y: rgba(77, 125, 247, 0.1);
+  --metric-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(238, 248, 255, 0.98));
+  --active-chip-start: #00a58e;
+  --active-chip-end: #7ccf34;
+  --mode-active-start: #4d7df7;
+  --mode-active-end: #b05cff;
+  --primary-end: #ff8a3d;
+  --canvas-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(219, 244, 255, 0.9));
+  --canvas-backdrop-start: rgba(255, 255, 255, 0.18);
+  --canvas-backdrop-end: rgba(246, 185, 0, 0.16);
+  --transform-circle-fill: rgba(77, 125, 247, 0.14);
+  --transform-circle-stroke: rgba(77, 125, 247, 0.86);
+  --transform-grid-line: rgba(0, 165, 142, 0.8);
+  --transform-grid-axis: rgba(0, 135, 117, 0.98);
+  --clock-transform-fill: rgba(77, 125, 247, 0.96);
+  --basis-e1: rgba(0, 165, 142, 0.95);
+  --basis-e1-handle: rgba(0, 165, 142, 0.98);
+  --basis-e2: rgba(77, 125, 247, 0.95);
+  --basis-e2-handle: rgba(77, 125, 247, 0.98);
+  --probe-line: rgba(246, 185, 0, 0.9);
+  --probe-arrow: rgba(246, 185, 0, 0.76);
+  --probe-handle: rgba(246, 185, 0, 1);
+  --image-arrow: rgba(244, 93, 116, 0.96);
 }
 
 *,
@@ -37,8 +337,11 @@ body {
   font-family: var(--font-ui);
   color: var(--ink);
   background:
-    radial-gradient(circle at top left, rgba(255, 253, 248, 0.94), transparent 28rem),
-    linear-gradient(145deg, #fff7ea 0%, var(--paper) 44%, #dcc39a 100%);
+    radial-gradient(circle at top left, var(--body-glow), transparent 28rem),
+    linear-gradient(145deg, var(--body-start) 0%, var(--paper) 44%, var(--body-end) 100%);
+  transition:
+    background 180ms ease,
+    color 180ms ease;
 }
 
 body::before {
@@ -47,8 +350,8 @@ body::before {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.22) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.18) 1px, transparent 1px);
+    linear-gradient(var(--body-pattern-x) 1px, transparent 1px),
+    linear-gradient(90deg, var(--body-pattern-y) 1px, transparent 1px);
   background-size: 36px 36px;
   mask-image: radial-gradient(circle at center, black 38%, transparent 88%);
   opacity: 0.28;
@@ -80,7 +383,7 @@ canvas {
 .panel,
 .note-card {
   background: var(--panel);
-  border: 1px solid rgba(255, 255, 255, 0.65);
+  border: 1px solid var(--card-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   backdrop-filter: blur(18px);
@@ -133,9 +436,8 @@ canvas {
 .metric {
   padding: 0.8rem 0.9rem;
   border-radius: var(--radius-md);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(249, 238, 220, 0.98));
-  border: 1px solid rgba(22, 37, 51, 0.1);
+  background: var(--metric-bg);
+  border: 1px solid var(--line);
 }
 
 .metric span {
@@ -229,8 +531,8 @@ canvas {
   min-height: 2rem;
   padding: 0.38rem 0.72rem;
   border-radius: 999px;
-  border: 1px solid rgba(22, 37, 51, 0.08);
-  background: rgba(22, 37, 51, 0.05);
+  border: 1px solid var(--line);
+  background: var(--control-bg);
   color: var(--ink);
   font-size: 0.8rem;
   line-height: 1.1;
@@ -269,7 +571,7 @@ button {
   min-height: 2rem;
   min-width: 0;
   padding: 0.45rem 0.55rem;
-  background: rgba(22, 37, 51, 0.08);
+  background: var(--chip-bg);
   color: var(--ink);
   text-align: center;
   line-height: 1.1;
@@ -281,7 +583,7 @@ button {
 .mode-chip {
   min-height: 2.15rem;
   padding: 0.55rem 0.8rem;
-  background: rgba(22, 37, 51, 0.07);
+  background: var(--mode-chip-bg);
   color: var(--ink);
 }
 
@@ -292,12 +594,12 @@ button:hover {
 }
 
 .preset-chip.is-active {
-  background: linear-gradient(135deg, var(--teal) 0%, #2f9184 100%);
+  background: linear-gradient(135deg, var(--active-chip-start) 0%, var(--active-chip-end) 100%);
   color: white;
 }
 
 .mode-chip.is-active {
-  background: linear-gradient(135deg, #183144 0%, #3a6480 100%);
+  background: linear-gradient(135deg, var(--mode-active-start) 0%, var(--mode-active-end) 100%);
   color: white;
 }
 
@@ -310,7 +612,7 @@ button:hover {
 
 button {
   padding: 0.68rem 0.95rem;
-  background: rgba(22, 37, 51, 0.1);
+  background: var(--control-bg-strong);
   color: var(--ink);
 }
 
@@ -318,7 +620,7 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--coral) 0%, #de8267 100%);
+  background: linear-gradient(135deg, var(--coral) 0%, var(--primary-end) 100%);
   color: white;
   height: 2rem;
   min-height: 2rem;
@@ -337,7 +639,31 @@ button {
   width: min(100%, 18rem);
   padding: 0.72rem 0.9rem;
   border-radius: var(--radius-md);
-  background: rgba(22, 37, 51, 0.06);
+  background: var(--control-bg);
+}
+
+.scheme-wrap {
+  display: grid;
+  gap: 0.35rem;
+  width: min(100%, 18rem);
+}
+
+.scheme-wrap span {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.scheme-wrap select {
+  width: 100%;
+  min-height: 2rem;
+  padding: 0 2.1rem 0 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--field-bg);
+  color: var(--ink);
+  cursor: pointer;
 }
 
 .progress-wrap span {
@@ -372,10 +698,8 @@ button {
   min-height: 24rem;
   overflow: hidden;
   border-radius: calc(var(--radius-lg) - 6px);
-  background:
-    radial-gradient(circle at 22% 15%, rgba(255, 255, 255, 0.78), transparent 20rem),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.48), rgba(224, 205, 168, 0.94));
-  border: 1px solid rgba(22, 37, 51, 0.1);
+  background: var(--canvas-bg);
+  border: 1px solid var(--line);
 }
 
 #stageCanvas {
@@ -393,8 +717,8 @@ button {
   bottom: 1rem;
   padding: 0.7rem 0.85rem;
   border-radius: var(--radius-md);
-  background: rgba(255, 252, 247, 0.92);
-  border: 1px solid rgba(22, 37, 51, 0.12);
+  background: var(--canvas-note-bg);
+  border: 1px solid var(--line);
   color: var(--ink);
   line-height: 1.4;
   font-size: 0.9rem;
@@ -423,19 +747,19 @@ button {
 }
 
 .legend-swatch--reference {
-  background: rgba(22, 37, 51, 0.24);
+  background: var(--reference-grid-axis);
 }
 
 .legend-swatch--transform {
-  background: rgba(36, 121, 111, 0.86);
+  background: var(--transform-grid-line);
 }
 
 .legend-swatch--eigen {
   background:
     repeating-linear-gradient(
       90deg,
-      rgba(205, 95, 65, 0.94),
-      rgba(205, 95, 65, 0.94) 10px,
+      var(--eigen-line),
+      var(--eigen-line) 10px,
       transparent 10px,
       transparent 14px
     );
@@ -469,7 +793,7 @@ button {
   position: relative;
   padding: 0.55rem 1rem;
   border-radius: var(--radius-md);
-  background: rgba(22, 37, 51, 0.06);
+  background: var(--control-bg);
 }
 
 .matrix-shell::before,
@@ -479,18 +803,18 @@ button {
   top: 1rem;
   bottom: 1rem;
   width: 14px;
-  border-top: 2px solid rgba(22, 37, 51, 0.2);
-  border-bottom: 2px solid rgba(22, 37, 51, 0.2);
+  border-top: 2px solid var(--line);
+  border-bottom: 2px solid var(--line);
 }
 
 .matrix-shell::before {
   left: 0.5rem;
-  border-left: 2px solid rgba(22, 37, 51, 0.2);
+  border-left: 2px solid var(--line);
 }
 
 .matrix-shell::after {
   right: 0.5rem;
-  border-right: 2px solid rgba(22, 37, 51, 0.2);
+  border-right: 2px solid var(--line);
 }
 
 .matrix-grid,
@@ -518,17 +842,17 @@ button {
 }
 
 .matrix-entry--e1 input[type="number"] {
-  border-color: rgba(25, 98, 89, 0.8);
+  border-color: var(--basis-e1);
   background:
-    linear-gradient(180deg, rgba(36, 121, 111, 0.24), rgba(255, 255, 255, 0.96));
-  box-shadow: inset 0 0 0 1px rgba(25, 98, 89, 0.2);
+    linear-gradient(180deg, var(--teal-soft), var(--field-bg));
+  box-shadow: inset 0 0 0 1px var(--teal-soft);
 }
 
 .matrix-entry--e2 input[type="number"] {
-  border-color: rgba(70, 111, 177, 0.82);
+  border-color: var(--basis-e2);
   background:
-    linear-gradient(180deg, rgba(95, 135, 199, 0.24), rgba(255, 255, 255, 0.96));
-  box-shadow: inset 0 0 0 1px rgba(70, 111, 177, 0.2);
+    linear-gradient(180deg, var(--sky-soft), var(--field-bg));
+  box-shadow: inset 0 0 0 1px var(--sky-soft);
 }
 
 .vector-grid span {
@@ -542,8 +866,8 @@ input[type="number"] {
   width: 100%;
   padding: 0.65rem 0.75rem;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(22, 37, 51, 0.16);
-  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--line);
+  background: var(--field-bg);
   color: var(--ink);
 }
 
@@ -551,6 +875,11 @@ input[type="number"]:focus,
 button:focus-visible,
 .preset-chip:focus-visible,
 input[type="range"]:focus-visible {
+  outline: 2px solid rgba(36, 121, 111, 0.55);
+  outline-offset: 2px;
+}
+
+.scheme-wrap select:focus-visible {
   outline: 2px solid rgba(36, 121, 111, 0.55);
   outline-offset: 2px;
 }
@@ -571,8 +900,8 @@ input[type="range"]:focus-visible {
 .summary-box,
 .detail-item {
   border-radius: var(--radius-md);
-  background: rgba(22, 37, 51, 0.055);
-  border: 1px solid rgba(22, 37, 51, 0.08);
+  background: var(--control-bg);
+  border: 1px solid var(--line);
 }
 
 .reading {

@@ -55,6 +55,7 @@ const state = {
   progress: 1,
   activePreset: presets[0].id,
   motionMode: "matrix-morph",
+  scheme: "earthy",
   showReferenceClock: false,
   showTransformedClock: false,
   isPlaying: false,
@@ -75,6 +76,7 @@ const elements = {
   playButton: document.getElementById("playButton"),
   progressSlider: document.getElementById("progressSlider"),
   progressValue: document.getElementById("progressValue"),
+  schemeSelect: document.getElementById("schemeSelect"),
   identityButton: document.getElementById("identityButton"),
   showReferenceClock: document.getElementById("showReferenceClock"),
   showTransformedClock: document.getElementById("showTransformedClock"),
@@ -103,6 +105,11 @@ const elements = {
 };
 
 function init() {
+  const defaultScheme = elements.schemeSelect.querySelector("option[selected]")?.value;
+  if (defaultScheme) {
+    state.scheme = defaultScheme;
+  }
+  applyScheme(state.scheme);
   renderPresetButtons();
   syncInputsFromState();
   wireEvents();
@@ -157,6 +164,12 @@ function wireEvents() {
   elements.progressSlider.addEventListener("input", (event) => {
     state.progress = Number(event.target.value) / 100;
     stopAnimation();
+    updateAll();
+  });
+
+  elements.schemeSelect.addEventListener("change", (event) => {
+    state.scheme = event.target.value;
+    applyScheme(state.scheme);
     updateAll();
   });
 
@@ -434,8 +447,53 @@ function syncInputsFromState() {
   syncVectorInputs();
   elements.progressSlider.value = String(Math.round(state.progress * 100));
   elements.progressValue.textContent = `${Math.round(state.progress * 100)}%`;
+  elements.schemeSelect.value = state.scheme;
   elements.showReferenceClock.checked = state.showReferenceClock;
   elements.showTransformedClock.checked = state.showTransformedClock;
+}
+
+function applyScheme(scheme) {
+  document.body.dataset.scheme = scheme;
+  document.documentElement.style.colorScheme =
+    scheme === "dark" || scheme === "halloween" ? "dark" : "light";
+}
+
+function getCanvasTheme() {
+  const styles = getComputedStyle(document.body);
+  const color = (name) => styles.getPropertyValue(name).trim();
+
+  return {
+    canvasBackdropStart: color("--canvas-backdrop-start"),
+    canvasBackdropEnd: color("--canvas-backdrop-end"),
+    referenceCircleFill: color("--reference-circle-fill"),
+    referenceCircleStroke: color("--reference-circle-stroke"),
+    referenceGridLine: color("--reference-grid-line"),
+    referenceGridAxis: color("--reference-grid-axis"),
+    transformCircleFill: color("--transform-circle-fill"),
+    transformCircleStroke: color("--transform-circle-stroke"),
+    transformGridLine: color("--transform-grid-line"),
+    transformGridAxis: color("--transform-grid-axis"),
+    clockReferenceFill: color("--clock-reference-fill"),
+    clockReferenceHalo: color("--clock-reference-halo"),
+    clockTransformFill: color("--clock-transform-fill"),
+    clockTransformHalo: color("--clock-transform-halo"),
+    basisE1: color("--basis-e1"),
+    basisE1Handle: color("--basis-e1-handle"),
+    basisE2: color("--basis-e2"),
+    basisE2Handle: color("--basis-e2-handle"),
+    probeLine: color("--probe-line"),
+    probeArrow: color("--probe-arrow"),
+    probeHandle: color("--probe-handle"),
+    imageArrow: color("--image-arrow"),
+    eigenLine: color("--eigen-line"),
+    eigenLineSoft: color("--eigen-line-soft"),
+    eigenTagBg: color("--eigen-tag-bg"),
+    projectionLine: color("--projection-line"),
+    tagBg: color("--tag-bg"),
+    tagInk: color("--tag-ink"),
+    handleStroke: color("--handle-stroke"),
+    originFill: color("--origin-fill"),
+  };
 }
 
 function syncVectorInputs() {
@@ -502,77 +560,85 @@ function renderScene() {
   const { width, height } = state.size;
   const currentMatrix = getAnimatedMatrix();
   const finalEigenData = computeEigenData(state.matrix);
+  const theme = getCanvasTheme();
   const image = applyMatrix(currentMatrix, state.vector);
   const projectionScale = dot(state.vector, image) / Math.max(dot(state.vector, state.vector), EPSILON);
   const projectedImage = scale(state.vector, projectionScale);
 
   ctx.clearRect(0, 0, width, height);
-  drawStageBackdrop(width, height);
+  drawStageBackdrop(width, height, theme);
   drawUnitCircle({ a: 1, b: 0, c: 0, d: 1 }, {
-    fill: "rgba(255, 255, 255, 0.18)",
-    stroke: "rgba(22, 37, 51, 0.22)",
+    fill: theme.referenceCircleFill,
+    stroke: theme.referenceCircleStroke,
     dash: [5, 8],
     width: 1.2,
   });
   drawGrid({ a: 1, b: 0, c: 0, d: 1 }, {
-    lineColor: "rgba(22, 37, 51, 0.18)",
-    axisColor: "rgba(22, 37, 51, 0.42)",
+    lineColor: theme.referenceGridLine,
+    axisColor: theme.referenceGridAxis,
     lineWidth: 1,
     axisWidth: 1.9,
   });
   drawUnitCircle(currentMatrix, {
-    fill: "rgba(95, 135, 199, 0.18)",
-    stroke: "rgba(95, 135, 199, 0.82)",
+    fill: theme.transformCircleFill,
+    stroke: theme.transformCircleStroke,
     dash: [],
     width: 1.7,
   });
   drawGrid(currentMatrix, {
-    lineColor: "rgba(36, 121, 111, 0.86)",
-    axisColor: "rgba(25, 98, 89, 1)",
+    lineColor: theme.transformGridLine,
+    axisColor: theme.transformGridAxis,
     lineWidth: 1.3,
     axisWidth: 2.5,
   });
 
   if (state.showReferenceClock) {
     drawClockNumbers({ a: 1, b: 0, c: 0, d: 1 }, {
-      fill: "rgba(22, 37, 51, 0.78)",
-      halo: "rgba(255, 252, 247, 0.95)",
+      fill: theme.clockReferenceFill,
+      halo: theme.clockReferenceHalo,
       transformGlyphs: false,
     });
   }
 
   if (state.showTransformedClock) {
     drawClockNumbers(currentMatrix, {
-      fill: "rgba(70, 111, 177, 0.96)",
-      halo: "rgba(255, 252, 247, 0.9)",
+      fill: theme.clockTransformFill,
+      halo: theme.clockTransformHalo,
       transformGlyphs: true,
     });
   }
 
-  drawEigenlines(finalEigenData);
-  drawProbeGuide(state.vector);
-  drawBasisVectors(currentMatrix);
-  drawProjection(projectedImage, image);
+  drawEigenlines(finalEigenData, theme);
+  drawProbeGuide(state.vector, theme);
+  drawBasisVectors(currentMatrix, theme);
+  drawProjection(projectedImage, image, theme);
   drawArrow(state.vector, {
-    color: "rgba(216, 154, 34, 0.72)",
+    color: theme.probeArrow,
     width: 2.4,
     label: "v",
     headSize: 11,
+    tagFill: theme.tagBg,
+    tagInk: theme.tagInk,
   });
   drawArrow(image, {
-    color: "rgba(204, 103, 79, 0.96)",
+    color: theme.imageArrow,
     width: 3.2,
     label: "T(v)",
     headSize: 12,
+    tagFill: theme.tagBg,
+    tagInk: theme.tagInk,
   });
-  drawHandle(state.vector);
-  drawOrigin();
+  drawHandle(state.vector, {
+    fill: theme.probeHandle,
+    stroke: theme.handleStroke,
+  });
+  drawOrigin(theme);
 }
 
-function drawStageBackdrop(width, height) {
+function drawStageBackdrop(width, height, theme) {
   const gradient = ctx.createLinearGradient(0, 0, 0, height);
-  gradient.addColorStop(0, "rgba(255, 255, 255, 0.18)");
-  gradient.addColorStop(1, "rgba(216, 191, 146, 0.26)");
+  gradient.addColorStop(0, theme.canvasBackdropStart);
+  gradient.addColorStop(1, theme.canvasBackdropEnd);
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
 }
@@ -745,14 +811,14 @@ function getTextPlacementBounds(metrics, scalePixels) {
   };
 }
 
-function drawEigenlines(eigenData) {
+function drawEigenlines(eigenData, theme) {
   if (!eigenData.real) {
     return;
   }
 
   if (eigenData.allDirections) {
     ctx.save();
-    ctx.strokeStyle = "rgba(205, 95, 65, 0.42)";
+    ctx.strokeStyle = theme.eigenLineSoft;
     ctx.lineWidth = 1.3;
     ctx.setLineDash([5, 8]);
     for (let angle = 0; angle < Math.PI; angle += Math.PI / 6) {
@@ -765,70 +831,76 @@ function drawEigenlines(eigenData) {
 
   eigenData.eigenpairs.forEach((pair) => {
     ctx.save();
-    ctx.strokeStyle = "rgba(205, 95, 65, 0.95)";
+    ctx.strokeStyle = theme.eigenLine;
     ctx.lineWidth = 1.9;
     ctx.setLineDash([10, 8]);
     drawInfiniteLine(pair.vector);
     ctx.restore();
 
     const labelPoint = scale(pair.vector, 4.35);
-    drawTag(labelPoint, `lambda = ${formatNumber(pair.value)}`, "rgba(205, 95, 65, 0.12)");
+    drawTag(labelPoint, `lambda = ${formatNumber(pair.value)}`, theme.eigenTagBg, theme.tagInk);
   });
 }
 
-function drawProbeGuide(vector) {
+function drawProbeGuide(vector, theme) {
   ctx.save();
-  ctx.strokeStyle = "rgba(216, 154, 34, 0.92)";
+  ctx.strokeStyle = theme.probeLine;
   ctx.lineWidth = 1.9;
   ctx.setLineDash([8, 7]);
   drawInfiniteLine(vector);
   ctx.restore();
 }
 
-function drawBasisVectors(matrix) {
+function drawBasisVectors(matrix, theme) {
   const e1 = { x: matrix.a, y: matrix.c };
   const e2 = { x: matrix.b, y: matrix.d };
   drawArrow(e1, {
-    color: "rgba(36, 121, 111, 0.95)",
+    color: theme.basisE1,
     width: 2.2,
     label: "T(e1)",
     headSize: 14,
+    tagFill: theme.tagBg,
+    tagInk: theme.tagInk,
   });
   drawArrow(e2, {
-    color: "rgba(95, 135, 199, 0.95)",
+    color: theme.basisE2,
     width: 2.2,
     label: "T(e2)",
     headSize: 14,
+    tagFill: theme.tagBg,
+    tagInk: theme.tagInk,
   });
   drawHandle(e1, {
-    fill: "rgba(36, 121, 111, 0.98)",
+    fill: theme.basisE1Handle,
+    stroke: theme.handleStroke,
     radius: 7.8,
   });
   drawHandle(e2, {
-    fill: "rgba(95, 135, 199, 0.98)",
+    fill: theme.basisE2Handle,
+    stroke: theme.handleStroke,
     radius: 7.8,
   });
   drawArrowHead(e1, {
-    color: "rgba(36, 121, 111, 0.95)",
+    color: theme.basisE1,
     headSize: 14,
   });
   drawArrowHead(e2, {
-    color: "rgba(95, 135, 199, 0.95)",
+    color: theme.basisE2,
     headSize: 14,
   });
 }
 
-function drawProjection(projected, image) {
+function drawProjection(projected, image, theme) {
   const distance = length(subtract(image, projected));
   if (distance < 0.04) {
     return;
   }
 
   ctx.save();
-  ctx.strokeStyle = "rgba(22, 37, 51, 0.4)";
+  ctx.strokeStyle = theme.projectionLine;
   ctx.lineWidth = 1.4;
   ctx.setLineDash([5, 6]);
-  drawWorldLine(projected, image, { stroke: "rgba(22, 37, 51, 0.4)", width: 1.4 });
+  drawWorldLine(projected, image, { stroke: theme.projectionLine, width: 1.4 });
   ctx.restore();
 }
 
@@ -848,7 +920,7 @@ function drawArrow(vector, options) {
   if (options.label && length(vector) > EPSILON) {
     const direction = normalize(vector);
     const labelPoint = add(vector, scale(direction, 0.35));
-    drawTag(labelPoint, options.label, "rgba(255, 255, 255, 0.82)");
+    drawTag(labelPoint, options.label, options.tagFill, options.tagInk);
   }
 
   ctx.restore();
@@ -885,7 +957,7 @@ function drawHandle(point, options = {}) {
   const screen = worldToScreen(point);
   ctx.save();
   ctx.fillStyle = options.fill || "rgba(216, 154, 34, 1)";
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
+  ctx.strokeStyle = options.stroke || "rgba(255, 255, 255, 0.95)";
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.arc(screen.x, screen.y, options.radius || 8.5, 0, Math.PI * 2);
@@ -894,10 +966,10 @@ function drawHandle(point, options = {}) {
   ctx.restore();
 }
 
-function drawOrigin() {
+function drawOrigin(theme) {
   const center = worldToScreen({ x: 0, y: 0 });
   ctx.save();
-  ctx.fillStyle = "rgba(22, 37, 51, 0.8)";
+  ctx.fillStyle = theme.originFill;
   ctx.beginPath();
   ctx.arc(center.x, center.y, 4, 0, Math.PI * 2);
   ctx.fill();
@@ -927,7 +999,7 @@ function drawWorldLine(start, end, style) {
   ctx.restore();
 }
 
-function drawTag(worldPoint, text, fill) {
+function drawTag(worldPoint, text, fill, ink = "rgba(18, 32, 44, 0.95)") {
   const point = worldToScreen(worldPoint);
   ctx.save();
   ctx.font = '600 14px "Avenir Next", "Segoe UI", sans-serif';
@@ -941,7 +1013,7 @@ function drawTag(worldPoint, text, fill) {
   ctx.fillStyle = fill;
   roundRect(ctx, x, y, width, height, 12);
   ctx.fill();
-  ctx.fillStyle = "rgba(18, 32, 44, 0.95)";
+  ctx.fillStyle = ink;
   ctx.fillText(text, x + paddingX, y + 17);
   ctx.restore();
 }

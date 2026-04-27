@@ -1086,6 +1086,543 @@ input[type="range"]:focus-visible {
   color: var(--muted);
 }
 
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-top: 0.75rem;
+  color: var(--teal);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.text-link:hover {
+  text-decoration: underline;
+}
+
+.lesson-shell {
+  max-width: 980px;
+}
+
+.lesson-hero {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+}
+
+.lesson-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 11rem;
+  padding: 1rem;
+  background: var(--panel);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.lesson-layout {
+  display: grid;
+}
+
+.lesson-card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.15rem 1.25rem;
+  background: var(--panel);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.lesson-card section {
+  padding: 0.95rem 1rem;
+  border-radius: var(--radius-md);
+  background: var(--control-bg);
+  border: 1px solid var(--line);
+}
+
+.lesson-card h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+}
+
+.lesson-card p {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.transform-figure {
+  margin: 0.9rem 0 0;
+  padding: 0.8rem;
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(135deg, var(--sky-soft), var(--teal-soft));
+  border: 1px solid var(--line);
+}
+
+.transform-diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.transform-diagram .diagram-grid {
+  width: 250px;
+  height: 250px;
+  fill: rgba(255, 255, 255, 0.18);
+  stroke: var(--reference-grid-axis);
+  stroke-width: 1.4;
+}
+
+.transform-diagram #referenceGrid path {
+  fill: none;
+  stroke: var(--reference-grid-line);
+  stroke-width: 1;
+}
+
+.transform-diagram #transformedGrid path {
+  fill: none;
+  stroke: var(--transform-grid-line);
+  stroke-width: 1;
+}
+
+.diagram-plane--transform .diagram-grid {
+  fill: var(--transform-circle-fill);
+  stroke: var(--transform-grid-axis);
+}
+
+.plane-grid-lines line {
+  stroke: var(--reference-grid-line);
+  stroke-width: 1;
+}
+
+.diagram-plane--transform .plane-grid-lines line,
+.basis-panel--landing .plane-grid-lines line {
+  stroke: var(--transform-grid-line);
+}
+
+.diagram-axis {
+  stroke: var(--reference-grid-axis);
+  stroke-width: 2;
+}
+
+.diagram-plane--transform .diagram-axis {
+  stroke: var(--transform-grid-axis);
+}
+
+.diagram-vector {
+  stroke-width: 4;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.diagram-vector--e1 {
+  stroke: var(--basis-e1);
+  marker-end: url("#arrowTeal");
+}
+
+.diagram-vector--e2 {
+  stroke: var(--basis-e2);
+  marker-end: url("#arrowSky");
+}
+
+.diagram-vector--x {
+  stroke: var(--probe-arrow);
+  marker-end: url("#arrowGold");
+}
+
+.diagram-vector--b {
+  stroke: var(--image-arrow);
+  marker-end: url("#arrowCoral");
+}
+
+.transform-diagram #arrowTeal path {
+  fill: var(--basis-e1);
+}
+
+.transform-diagram #arrowSky path {
+  fill: var(--basis-e2);
+}
+
+.transform-diagram #arrowGold path {
+  fill: var(--probe-arrow);
+}
+
+.transform-diagram #arrowCoral path {
+  fill: var(--image-arrow);
+}
+
+.diagram-map path {
+  fill: none;
+  stroke: var(--eigen-line);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 8 7;
+}
+
+.transform-diagram text {
+  fill: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.transform-diagram .diagram-caption {
+  fill: var(--muted);
+  font-size: 14px;
+  text-anchor: middle;
+}
+
+.transform-figure figcaption {
+  margin-top: 0.7rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.basis-diagram .basis-panel rect {
+  fill: rgba(255, 255, 255, 0.18);
+  stroke: var(--reference-grid-axis);
+  stroke-width: 1.4;
+}
+
+.basis-diagram .basis-panel--landing rect {
+  fill: var(--transform-circle-fill);
+  stroke: var(--transform-grid-axis);
+}
+
+.basis-diagram .basis-vector {
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.basis-vector--e1 {
+  stroke: var(--basis-e1);
+  marker-end: url(#basisArrowTeal);
+}
+
+.basis-vector--e2 {
+  stroke: var(--basis-e2);
+  marker-end: url(#basisArrowSky);
+}
+
+.basis-diagram #basisArrowTeal path {
+  fill: var(--basis-e1);
+}
+
+.basis-diagram #basisArrowSky path {
+  fill: var(--basis-e2);
+}
+
+.basis-map path {
+  fill: none;
+  stroke: var(--eigen-line);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 8 7;
+}
+
+.basis-diagram .diagram-column-label {
+  fill: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.column-plane rect,
+.axb-plane rect {
+  fill: rgba(255, 255, 255, 0.18);
+  stroke: var(--reference-grid-axis);
+  stroke-width: 1.4;
+}
+
+.column-vector,
+.axb-vector {
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.column-vector--e1 {
+  stroke: var(--basis-e1);
+  marker-end: url(#columnArrowTeal);
+}
+
+.column-vector--e2 {
+  stroke: var(--basis-e2);
+  marker-end: url(#columnArrowSky);
+}
+
+.column-diagram #columnArrowTeal path {
+  fill: var(--basis-e1);
+}
+
+.column-diagram #columnArrowSky path {
+  fill: var(--basis-e2);
+}
+
+.column-matrix path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.column-divider {
+  stroke: var(--line);
+  stroke-width: 2;
+}
+
+.column-title,
+.column-note,
+.column-symbol {
+  text-anchor: middle;
+}
+
+.column-title {
+  fill: var(--muted);
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.column-vector-name {
+  font-family: var(--font-display);
+  font-size: 22px;
+}
+
+.column-vector-name--e1 {
+  fill: var(--basis-e1);
+}
+
+.column-vector-name--e2 {
+  fill: var(--basis-e2);
+}
+
+.column-note {
+  fill: var(--muted);
+  font-size: 11px;
+}
+
+.column-symbol {
+  fill: var(--ink);
+  font-family: var(--font-display);
+  font-size: 26px;
+}
+
+.axb-equation text {
+  fill: var(--ink);
+  font-family: var(--font-display);
+  font-size: 48px;
+}
+
+.axb-equation .axb-label {
+  fill: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.axb-vector--x {
+  stroke: var(--probe-arrow);
+  marker-end: url(#axbArrowGold);
+}
+
+.axb-vector--b {
+  stroke: var(--image-arrow);
+  marker-end: url(#axbArrowCoral);
+}
+
+.axb-diagram #axbArrowGold path {
+  fill: var(--probe-arrow);
+}
+
+.axb-diagram #axbArrowCoral path {
+  fill: var(--image-arrow);
+}
+
+.axb-motion {
+  fill: none;
+  stroke: var(--eigen-line);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-dasharray: 7 7;
+}
+
+.example-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.example-html-math {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.35rem 1.6rem;
+}
+
+.example-matrix-row {
+  display: grid;
+  grid-template-columns: 3.9rem auto;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.example-matrix-product {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.05rem;
+}
+
+.example-matrix-operator {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 800;
+}
+
+.example-matrix-label {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.matrix {
+  position: relative;
+  border-collapse: separate;
+  border-spacing: 0.52rem 0.24rem;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.matrix::before,
+.matrix::after {
+  content: "";
+  position: absolute;
+  top: -0.1rem;
+  width: 0.5rem;
+  height: calc(100% + 0.2rem);
+  border: 3px solid var(--ink);
+}
+
+.matrix::before {
+  left: -0.5rem;
+  border-right: 0;
+}
+
+.matrix::after {
+  right: -0.5rem;
+  border-left: 0;
+}
+
+.matrix td {
+  min-width: 1.55rem;
+  padding: 0.12rem 0.18rem;
+  text-align: center;
+}
+
+.matrix--vector td {
+  min-width: 1.2rem;
+}
+
+.example-work {
+  display: grid;
+  justify-self: center;
+  gap: 0.32rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-soft);
+}
+
+.example-work span {
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.example-work strong {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+
+.example-plane-diagram {
+  width: 100%;
+  max-width: 250px;
+  justify-self: center;
+}
+
+.example-plane rect {
+  fill: rgba(255, 255, 255, 0.18);
+  stroke: var(--reference-grid-axis);
+  stroke-width: 1.4;
+}
+
+.example-vector {
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.example-vector--x {
+  stroke: var(--probe-arrow);
+  marker-end: url(#exampleArrowGold);
+}
+
+.example-vector--b {
+  stroke: var(--image-arrow);
+  marker-end: url(#exampleArrowCoral);
+}
+
+.example-plane-diagram #exampleArrowGold path {
+  fill: var(--probe-arrow);
+}
+
+.example-plane-diagram #exampleArrowCoral path {
+  fill: var(--image-arrow);
+}
+
+.example-plane text {
+  fill: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.lesson-card .lesson-equation {
+  justify-self: start;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(135deg, var(--sky-soft), var(--teal-soft));
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.lesson-card .lesson-summary {
+  background:
+    linear-gradient(135deg, var(--sky-soft), var(--teal-soft));
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -1113,6 +1650,7 @@ input[type="range"]:focus-visible {
 @media (max-width: 1120px) {
   .hero,
   .app-layout,
+  .lesson-hero,
   .study-notes {
     grid-template-columns: 1fr;
   }
@@ -1135,6 +1673,8 @@ input[type="range"]:focus-visible {
   .hero-metrics,
   .stage-card,
   .panel,
+  .lesson-nav,
+  .lesson-card,
   .note-card {
     border-radius: 22px;
   }
@@ -1153,6 +1693,17 @@ input[type="range"]:focus-visible {
     justify-items: stretch;
     min-width: 0;
   }
+
+  .example-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .example-html-math,
+  .example-work,
+  .example-plane-diagram {
+    justify-self: center;
+  }
+
   .canvas-wrap {
     min-height: 20rem;
   }

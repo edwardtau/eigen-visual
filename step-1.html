@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Step 1: Ax = b | Eigen Explorer</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-shell lesson-shell">
+      <header class="hero lesson-hero">
+        <section class="hero-copy">
+          <p class="eyebrow">Eigen Explorer lesson</p>
+          <h1>Step 1: Ax = b</h1>
+          <p class="lede">
+            Before looking for eigenvectors, start with the basic action of a
+            matrix: it transforms one vector into another.
+          </p>
+        </section>
+
+        <nav class="lesson-nav" aria-label="Lesson navigation">
+          <a class="text-link" href="index.html">Back to explorer</a>
+        </nav>
+      </header>
+
+      <main class="lesson-layout">
+        <article class="lesson-card">
+
+          <section>
+            <h2>A matrix transforms the plane</h2>
+            <figure class="transform-figure">
+              <svg
+                class="transform-diagram"
+                viewBox="0 0 720 360"
+                role="img"
+                aria-labelledby="transformDiagramTitle transformDiagramDescription"
+              >
+                <title id="transformDiagramTitle">Matrix A transforms vector x into vector b</title>
+                <desc id="transformDiagramDescription">
+                  A reference grid with input vector x is transformed by matrix A
+                  into a slanted grid where the output vector is labeled b.
+                </desc>
+                <defs>
+                  <pattern id="referenceGrid" width="34" height="34" patternUnits="userSpaceOnUse">
+                    <path d="M 34 0 L 0 0 0 34" />
+                  </pattern>
+                  <pattern id="transformedGrid" width="34" height="34" patternUnits="userSpaceOnUse">
+                    <path d="M 34 0 L 0 0 0 34" />
+                  </pattern>
+                  <marker
+                    id="arrowGold"
+                    markerWidth="10"
+                    markerHeight="10"
+                    refX="8"
+                    refY="5"
+                    orient="auto"
+                  >
+                    <path d="M 0 0 L 10 5 L 0 10 z" />
+                  </marker>
+                  <marker
+                    id="arrowCoral"
+                    markerWidth="10"
+                    markerHeight="10"
+                    refX="8"
+                    refY="5"
+                    orient="auto"
+                  >
+                    <path d="M 0 0 L 10 5 L 0 10 z" />
+                  </marker>
+                  <marker
+                    id="arrowTeal"
+                    markerWidth="9"
+                    markerHeight="9"
+                    refX="7"
+                    refY="4.5"
+                    orient="auto"
+                  >
+                    <path d="M 0 0 L 9 4.5 L 0 9 z" />
+                  </marker>
+                  <marker
+                    id="arrowSky"
+                    markerWidth="9"
+                    markerHeight="9"
+                    refX="7"
+                    refY="4.5"
+                    orient="auto"
+                  >
+                    <path d="M 0 0 L 9 4.5 L 0 9 z" />
+                  </marker>
+                </defs>
+
+                <g class="diagram-plane diagram-plane--reference" transform="translate(58 36)">
+                  <rect class="diagram-grid" width="250" height="250" />
+                  <g class="plane-grid-lines">
+                    <line x1="25" y1="0" x2="25" y2="250" />
+                    <line x1="50" y1="0" x2="50" y2="250" />
+                    <line x1="75" y1="0" x2="75" y2="250" />
+                    <line x1="100" y1="0" x2="100" y2="250" />
+                    <line x1="150" y1="0" x2="150" y2="250" />
+                    <line x1="175" y1="0" x2="175" y2="250" />
+                    <line x1="200" y1="0" x2="200" y2="250" />
+                    <line x1="225" y1="0" x2="225" y2="250" />
+                    <line x1="0" y1="25" x2="250" y2="25" />
+                    <line x1="0" y1="50" x2="250" y2="50" />
+                    <line x1="0" y1="75" x2="250" y2="75" />
+                    <line x1="0" y1="100" x2="250" y2="100" />
+                    <line x1="0" y1="150" x2="250" y2="150" />
+                    <line x1="0" y1="175" x2="250" y2="175" />
+                    <line x1="0" y1="200" x2="250" y2="200" />
+                    <line x1="0" y1="225" x2="250" y2="225" />
+                  </g>
+                  <line class="diagram-axis" x1="0" y1="125" x2="250" y2="125" />
+                  <line class="diagram-axis" x1="125" y1="250" x2="125" y2="0" />
+                  <line class="diagram-vector diagram-vector--e1" x1="125" y1="125" x2="193" y2="125" />
+                  <line class="diagram-vector diagram-vector--e2" x1="125" y1="125" x2="125" y2="57" />
+                  <line class="diagram-vector diagram-vector--x" x1="125" y1="125" x2="210" y2="74" />
+                  <text x="197" y="145">e1</text>
+                  <text x="134" y="60">e2</text>
+                  <text x="214" y="70">x</text>
+                  <text class="diagram-caption" x="125" y="286">reference plane</text>
+                </g>
+
+                <g class="diagram-map">
+                  <path d="M 337 158 C 376 118, 403 118, 442 158" />
+                  <text x="389" y="126">A</text>
+                </g>
+
+                <g class="diagram-plane diagram-plane--transform" transform="translate(470 30) skewY(-18)">
+                  <rect class="diagram-grid" width="250" height="250" />
+                  <g class="plane-grid-lines">
+                    <line x1="25" y1="0" x2="25" y2="250" />
+                    <line x1="50" y1="0" x2="50" y2="250" />
+                    <line x1="75" y1="0" x2="75" y2="250" />
+                    <line x1="100" y1="0" x2="100" y2="250" />
+                    <line x1="150" y1="0" x2="150" y2="250" />
+                    <line x1="175" y1="0" x2="175" y2="250" />
+                    <line x1="200" y1="0" x2="200" y2="250" />
+                    <line x1="225" y1="0" x2="225" y2="250" />
+                    <line x1="0" y1="25" x2="250" y2="25" />
+                    <line x1="0" y1="50" x2="250" y2="50" />
+                    <line x1="0" y1="75" x2="250" y2="75" />
+                    <line x1="0" y1="100" x2="250" y2="100" />
+                    <line x1="0" y1="150" x2="250" y2="150" />
+                    <line x1="0" y1="175" x2="250" y2="175" />
+                    <line x1="0" y1="200" x2="250" y2="200" />
+                    <line x1="0" y1="225" x2="250" y2="225" />
+                  </g>
+                  <line class="diagram-axis" x1="0" y1="125" x2="250" y2="125" />
+                  <line class="diagram-axis" x1="125" y1="250" x2="125" y2="0" />
+                  <line class="diagram-vector diagram-vector--e1" x1="125" y1="125" x2="204" y2="125" />
+                  <line class="diagram-vector diagram-vector--e2" x1="125" y1="125" x2="125" y2="48" />
+                  <line class="diagram-vector diagram-vector--b" x1="125" y1="125" x2="220" y2="63" />
+                  <text x="206" y="146">A e1</text>
+                  <text x="132" y="50">A e2</text>
+                  <text x="224" y="60">b</text>
+                  <text class="diagram-caption" x="125" y="286" transform="skewY(18)">
+                    transformed plane
+                  </text>
+                </g>
+              </svg>
+              <figcaption>
+                Matrix <strong>A</strong> moves the input vector
+                <strong>x</strong> from the reference plane to the output vector
+                <strong>b</strong> on the transformed plane.
+              </figcaption>
+            </figure>
+            <p>
+              In this visualization, a matrix is best understood as a linear
+              transformation of the plane. We start with a two-dimensional
+              reference plane with x- and y-axes. Its unit basis vectors are
+              <strong>e1 = (1, 0)</strong> and <strong>e2 = (0, 1)</strong>.
+              Depending on the numbers in the matrix, the transformation can stretch,
+              shrink, rotate, or skew the plane. 
+            </p>
+          </section>
+
+          <section>
+            <h2>Watch where the basis vectors land</h2>
+            <figure class="transform-figure">
+              <svg
+                class="transform-diagram basis-diagram"
+                viewBox="0 0 720 300"
+                role="img"
+                aria-labelledby="basisDiagramTitle basisDiagramDescription"
+              >
+                <title id="basisDiagramTitle">Basis vectors landing after transformation</title>
+                <desc id="basisDiagramDescription">
+                  The basis vectors e1 and e2 start on the reference plane.
+                  Matrix A sends them to A e1 and A e2, which become the first
+                  and second columns of A.
+                </desc>
+                <defs>
+                  <marker
+                    id="basisArrowTeal"
+                    markerWidth="9"
+                    markerHeight="9"
+                    refX="7"
+                    refY="4.5"
+                    orient="auto"
+                  >
+                    <path d="M 0 0 L 9 4.5 L 0 9 z" />
+                  </marker>
+                  <marker
+                    id="basisArrowSky"
+                    markerWidth="9"
+                    markerHeight="9"
+                    refX="7"
+                    refY="4.5"
+                    orient="auto"
+                  >
+                    <path d="M 0 0 L 9 4.5 L 0 9 z" />
+                  </marker>
+                </defs>
+
+                <g class="basis-panel" transform="translate(62 38)">
+                  <rect width="210" height="210" />
+                  <g class="plane-grid-lines">
+                    <line x1="35" y1="0" x2="35" y2="210" />
+                    <line x1="70" y1="0" x2="70" y2="210" />
+                    <line x1="140" y1="0" x2="140" y2="210" />
+                    <line x1="175" y1="0" x2="175" y2="210" />
+                    <line x1="0" y1="35" x2="210" y2="35" />
+                    <line x1="0" y1="70" x2="210" y2="70" />
+                    <line x1="0" y1="140" x2="210" y2="140" />
+                    <line x1="0" y1="175" x2="210" y2="175" />
+                  </g>
+                  <line class="diagram-axis" x1="0" y1="105" x2="210" y2="105" />
+                  <line class="diagram-axis" x1="105" y1="210" x2="105" y2="0" />
+                  <line class="basis-vector basis-vector--e1" x1="105" y1="105" x2="176" y2="105" />
+                  <line class="basis-vector basis-vector--e2" x1="105" y1="105" x2="105" y2="34" />
+                  <text x="181" y="124">e1</text>
+                  <text x="115" y="38">e2</text>
+                  <text class="diagram-caption" x="105" y="244">before A</text>
+                </g>
+
+                <g class="basis-map">
+                  <path d="M 310 130 C 344 96, 376 96, 410 130" />
+                  <text x="360" y="92">apply A</text>
+                </g>
+
+                <g class="basis-panel basis-panel--landing" transform="translate(462 38)">
+                  <rect width="210" height="210" />
+                  <g class="plane-grid-lines">
+                    <line x1="35" y1="0" x2="35" y2="210" />
+                    <line x1="70" y1="0" x2="70" y2="210" />
+                    <line x1="140" y1="0" x2="140" y2="210" />
+                    <line x1="175" y1="0" x2="175" y2="210" />
+                    <line x1="0" y1="35" x2="210" y2="35" />
+                    <line x1="0" y1="70" x2="210" y2="70" />
+                    <line x1="0" y1="140" x2="210" y2="140" />
+                    <line x1="0" y1="175" x2="210" y2="175" />
+                  </g>
+                  <line class="diagram-axis" x1="0" y1="105" x2="210" y2="105" />
+                  <line class="diagram-axis" x1="105" y1="210" x2="105" y2="0" />
+                  <line class="basis-vector basis-vector--e1" x1="105" y1="105" x2="184" y2="77" />
+                  <line class="basis-vector basis-vector--e2" x1="105" y1="105" x2="70" y2="25" />
+                  <text x="186" y="73">A e1</text>
+                  <text x="32" y="25">A e2</text>
+                  <text class="diagram-column-label" x="134" y="162">column 1</text>
+                  <text class="diagram-column-label" x="42" y="155">column 2</text>
+                  <text class="diagram-caption" x="105" y="244">after A</text>
+                </g>
+              </svg>
+              <figcaption>
+                The first column of <strong>A</strong> is where
+                <strong>e1</strong> lands. The second column is where
+                <strong>e2</strong> lands.
+              </figcaption>
+            </figure>
+            <p>
+              The transformation encoded by matrix <strong>A</strong> moves
+              every point and vector in the reference plane to a new location on
+              the transformed plane. By watching where the basis vectors land,
+              we can see what the whole matrix does.
+            </p>
+          </section>
+
+          <section>
+            <h2>The columns of A tell the story</h2>
+            <figure class="transform-figure">
+              <svg
+                class="transform-diagram column-diagram"
+                viewBox="0 0 720 300"
+                role="img"
+                aria-labelledby="columnDiagramTitle columnDiagramDescription"
+              >
+                <title id="columnDiagramTitle">The columns of A are transformed basis vectors</title>
+                <desc id="columnDiagramDescription">
+                  Matrix A is shown as two column vectors. The first column is
+                  A e1 and the second column is A e2.
+                </desc>
+                <defs>
+                  <marker
+                    id="columnArrowTeal"
+                    markerWidth="9"
+                    markerHeight="9"
+                    refX="7"
+                    refY="4.5"
+                    orient="auto"
+                  >
+                    <path d="M 0 0 L 9 4.5 L 0 9 z" />
+                  </marker>
+                  <marker
+                    id="columnArrowSky"
+                    markerWidth="9"
+                    markerHeight="9"
+                    refX="7"
+                    refY="4.5"
+                    orient="auto"
+                  >
+                    <path d="M 0 0 L 9 4.5 L 0 9 z" />
+                  </marker>
+                </defs>
+
+                <g class="column-plane" transform="translate(70 32)">
+                  <rect width="220" height="220" />
+                  <g class="plane-grid-lines">
+                    <line x1="22" y1="0" x2="22" y2="220" />
+                    <line x1="44" y1="0" x2="44" y2="220" />
+                    <line x1="66" y1="0" x2="66" y2="220" />
+                    <line x1="88" y1="0" x2="88" y2="220" />
+                    <line x1="132" y1="0" x2="132" y2="220" />
+                    <line x1="154" y1="0" x2="154" y2="220" />
+                    <line x1="176" y1="0" x2="176" y2="220" />
+                    <line x1="198" y1="0" x2="198" y2="220" />
+                    <line x1="0" y1="22" x2="220" y2="22" />
+                    <line x1="0" y1="44" x2="220" y2="44" />
+                    <line x1="0" y1="66" x2="220" y2="66" />
+                    <line x1="0" y1="88" x2="220" y2="88" />
+                    <line x1="0" y1="132" x2="220" y2="132" />
+                    <line x1="0" y1="154" x2="220" y2="154" />
+                    <line x1="0" y1="176" x2="220" y2="176" />
+                    <line x1="0" y1="198" x2="220" y2="198" />
+                  </g>
+                  <line class="diagram-axis" x1="0" y1="110" x2="220" y2="110" />
+                  <line class="diagram-axis" x1="110" y1="220" x2="110" y2="0" />
+                  <line class="column-vector column-vector--e1" x1="110" y1="110" x2="188" y2="78" />
+                  <line class="column-vector column-vector--e2" x1="110" y1="110" x2="74" y2="30" />
+                  <text x="191" y="75">A e1</text>
+                  <text x="36" y="30">A e2</text>
+                  <text class="diagram-caption" x="110" y="254">landing vectors</text>
+                </g>
+
+                <g class="column-matrix" transform="translate(405 48)">
+                  <path d="M 0 0 H -18 V 190 H 0" />
+                  <path d="M 210 0 H 228 V 190 H 210" />
+                  <line class="column-divider" x1="105" y1="18" x2="105" y2="172" />
+                  <text class="column-title" x="52" y="34">column 1</text>
+                  <text class="column-title" x="158" y="34">column 2</text>
+                  <text class="column-vector-name column-vector-name--e1" x="52" y="98">A e1</text>
+                  <text class="column-vector-name column-vector-name--e2" x="158" y="98">A e2</text>
+                  <text class="column-note" x="52" y="134">
+                    <tspan x="52" dy="0">where e1</tspan>
+                    <tspan x="52" dy="15">lands</tspan>
+                  </text>
+                  <text class="column-note" x="158" y="134">
+                    <tspan x="158" dy="0">where e2</tspan>
+                    <tspan x="158" dy="15">lands</tspan>
+                  </text>
+                  <text class="column-symbol" x="105" y="220">A</text>
+                </g>
+              </svg>
+              <figcaption>
+                A two-dimensional matrix stores the landing places of the two
+                basis vectors as its columns.
+              </figcaption>
+            </figure>
+            <p>
+              Matrix <strong>A</strong> is made from two column vectors: the
+              first column is where <strong>e1</strong> lands, and the second
+              column is where <strong>e2</strong> lands.
+            </p>
+          </section>
+
+          <section class="lesson-summary">
+            <h2>What Ax = b means</h2>
+            <figure class="transform-figure">
+              <svg
+                class="transform-diagram axb-diagram"
+                viewBox="0 0 720 290"
+                role="img"
+                aria-labelledby="axbDiagramTitle axbDiagramDescription"
+              >
+                <title id="axbDiagramTitle">Matrix A sends input vector x to output vector b</title>
+                <desc id="axbDiagramDescription">
+                  The equation A times x equals b is shown as a matrix, an input
+                  vector, and an output vector, with a small diagram of x moving
+                  to b.
+                </desc>
+                <defs>
+                  <marker
+                    id="axbArrowGold"
+                    markerWidth="10"
+                    markerHeight="10"
+                    refX="8"
+                    refY="5"
+                    orient="auto"
+                  >
+                    <path d="M 0 0 L 10 5 L 0 10 z" />
+                  </marker>
+                  <marker
+                    id="axbArrowCoral"
+                    markerWidth="10"
+                    markerHeight="10"
+                    refX="8"
+                    refY="5"
+                    orient="auto"
+                  >
+                    <path d="M 0 0 L 10 5 L 0 10 z" />
+                  </marker>
+                </defs>
+
+                <g class="axb-equation" transform="translate(42 56)">
+                  <text x="30" y="75">A</text>
+                  <text x="126" y="75">x</text>
+                  <text x="200" y="75">=</text>
+                  <text x="284" y="75">b</text>
+                  <text class="axb-label" x="42" y="122">transformation</text>
+                  <text class="axb-label" x="136" y="122">input</text>
+                  <text class="axb-label" x="296" y="122">output</text>
+                </g>
+
+                <g class="axb-plane" transform="translate(405 30)">
+                  <rect width="220" height="220" />
+                  <g class="plane-grid-lines">
+                    <line x1="22" y1="0" x2="22" y2="220" />
+                    <line x1="44" y1="0" x2="44" y2="220" />
+                    <line x1="66" y1="0" x2="66" y2="220" />
+                    <line x1="88" y1="0" x2="88" y2="220" />
+                    <line x1="132" y1="0" x2="132" y2="220" />
+                    <line x1="154" y1="0" x2="154" y2="220" />
+                    <line x1="176" y1="0" x2="176" y2="220" />
+                    <line x1="198" y1="0" x2="198" y2="220" />
+                    <line x1="0" y1="22" x2="220" y2="22" />
+                    <line x1="0" y1="44" x2="220" y2="44" />
+                    <line x1="0" y1="66" x2="220" y2="66" />
+                    <line x1="0" y1="88" x2="220" y2="88" />
+                    <line x1="0" y1="132" x2="220" y2="132" />
+                    <line x1="0" y1="154" x2="220" y2="154" />
+                    <line x1="0" y1="176" x2="220" y2="176" />
+                    <line x1="0" y1="198" x2="220" y2="198" />
+                  </g>
+                  <line class="diagram-axis" x1="0" y1="110" x2="220" y2="110" />
+                  <line class="diagram-axis" x1="110" y1="220" x2="110" y2="0" />
+                  <line class="axb-vector axb-vector--x" x1="110" y1="110" x2="168" y2="72" />
+                  <line class="axb-vector axb-vector--b" x1="110" y1="110" x2="205" y2="45" />
+                  <path class="axb-motion" d="M 170 82 C 187 85, 198 70, 204 52" />
+                  <text x="171" y="68">x</text>
+                  <text x="208" y="42">b</text>
+                  <text class="diagram-caption" x="110" y="254">apply A to x</text>
+                </g>
+              </svg>
+              <figcaption>
+                The matrix <strong>A</strong> acts on the input vector
+                <strong>x</strong>. The result is the output vector
+                <strong>b</strong>.
+              </figcaption>
+            </figure>
+            <p>
+              In equation form, we write this as <strong>Ax = b</strong>. Here,
+              <strong>A</strong> is the transformation matrix,
+              <strong>x</strong> is the original input vector, and
+              <strong>b</strong> is the transformed output vector.
+            </p>
+          </section>
+
+          <section>
+            <h2>Example of A x = b</h2>
+            The inputs to the equation are matrix <strong>A</strong> and vector <strong>x</strong>. The output is vector <strong>b</strong>.
+            So, A acts on x to give b. Let's see what that looks like with actual numbers.
+            <figure class="transform-figure">
+              <div class="example-layout">
+                <div class="example-html-math" aria-label="A numerical matrix multiplication example">
+                  <div class="example-matrix-row">
+                    <span class="example-matrix-label">A =</span>
+                    <table class="matrix matrix--two-by-two" aria-label="Matrix A">
+                      <tr>
+                        <td>2</td>
+                        <td>1</td>
+                      </tr>
+                      <tr>
+                        <td>1</td>
+                        <td>2</td>
+                      </tr>
+                    </table>
+                  </div>
+                  &comma;
+                  <div class="example-matrix-row">
+                    <span class="example-matrix-label">x =</span>
+                    <table class="matrix matrix--vector" aria-label="Vector x">
+                      <tr>
+                        <td>3</td>
+                      </tr>
+                      <tr>
+                        <td>1</td>
+                      </tr>
+                    </table>
+                  </div>
+                  &comma;
+
+                  <div class="example-matrix-row">
+                    <span class="example-matrix-label">b =</span>
+                    <table class="matrix matrix--vector" aria-label="Vector b">
+                      <tr>
+                        <td>?</td>
+                      </tr>
+                      <tr>
+                        <td>?</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+
+                <p>We solve for <strong>b</strong> by multiplying <strong>A</strong> and <strong>x</strong>:</p>
+                  <div class="example-matrix-product">
+                    <table class="matrix matrix--two-by-two" aria-label="Matrix A">
+                      <tr>
+                        <td>2</td>
+                        <td>1</td>
+                      </tr>
+                      <tr>
+                        <td>1</td>
+                        <td>2</td>
+                      </tr>
+                    </table>
+                    <span class="example-matrix-operator">&times;</span>
+                    <table class="matrix matrix--vector" aria-label="Vector x">
+                      <tr>
+                        <td>3</td>
+                      </tr>
+                      <tr>
+                        <td>1</td>
+                      </tr>
+                    </table>
+                  </div>
+                <div class="example-work" aria-label="Entry-by-entry calculation">
+                  <span>Ax</span>
+                  <strong>2*3 + 1*1 = 7</strong>
+                  <strong>1*3 + 2*1 = 5</strong>
+                </div>
+
+                <svg
+                  class="example-plane-diagram"
+                  viewBox="0 0 230 220"
+                  role="img"
+                  aria-labelledby="exampleDiagramTitle exampleDiagramDescription"
+                >
+                  <title id="exampleDiagramTitle">Vector x transforms into vector b</title>
+                  <desc id="exampleDiagramDescription">
+                    The input vector x equals (3, 1), and the output vector b
+                    equals (7, 5).
+                  </desc>
+                  <defs>
+                    <marker
+                      id="exampleArrowGold"
+                      markerWidth="10"
+                      markerHeight="10"
+                      refX="8"
+                      refY="5"
+                      orient="auto"
+                    >
+                      <path d="M 0 0 L 10 5 L 0 10 z" />
+                    </marker>
+                    <marker
+                      id="exampleArrowCoral"
+                      markerWidth="10"
+                      markerHeight="10"
+                      refX="8"
+                      refY="5"
+                      orient="auto"
+                    >
+                      <path d="M 0 0 L 10 5 L 0 10 z" />
+                    </marker>
+                  </defs>
+
+                  <g class="example-plane" transform="translate(18 14)">
+                    <rect width="190" height="190" />
+                    <g class="plane-grid-lines">
+                      <line x1="19" y1="0" x2="19" y2="190" />
+                      <line x1="38" y1="0" x2="38" y2="190" />
+                      <line x1="57" y1="0" x2="57" y2="190" />
+                      <line x1="76" y1="0" x2="76" y2="190" />
+                      <line x1="114" y1="0" x2="114" y2="190" />
+                      <line x1="133" y1="0" x2="133" y2="190" />
+                      <line x1="152" y1="0" x2="152" y2="190" />
+                      <line x1="171" y1="0" x2="171" y2="190" />
+                      <line x1="0" y1="19" x2="190" y2="19" />
+                      <line x1="0" y1="38" x2="190" y2="38" />
+                      <line x1="0" y1="57" x2="190" y2="57" />
+                      <line x1="0" y1="76" x2="190" y2="76" />
+                      <line x1="0" y1="114" x2="190" y2="114" />
+                      <line x1="0" y1="133" x2="190" y2="133" />
+                      <line x1="0" y1="152" x2="190" y2="152" />
+                      <line x1="0" y1="171" x2="190" y2="171" />
+                    </g>
+                    <line class="diagram-axis" x1="0" y1="95" x2="190" y2="95" />
+                    <line class="diagram-axis" x1="95" y1="190" x2="95" y2="0" />
+                    <line class="example-vector example-vector--x" x1="95" y1="95" x2="137" y2="81" />
+                    <line class="example-vector example-vector--b" x1="95" y1="95" x2="193" y2="25" />
+                    <text x="141" y="82">x = (3, 1)</text>
+                    <text x="118" y="28">b = (7, 5)</text>
+                  </g>
+                </svg>
+              </div>
+              <figcaption>
+                Multiplying <strong>A</strong> by <strong>x</strong> gives
+                <strong>b = (7, 5)</strong>. The output vector is farther out
+                and points in a different direction because the matrix changed
+                the plane.
+              </figcaption>
+            </figure>
+            <p>
+              In this example, the first entry of <strong>b</strong> is
+              <strong>2*3 + 1*1 = 7</strong>, and the second entry is
+              <strong>1*3 + 2*1 = 5</strong>. So the input vector
+              <strong>x = (3, 1)</strong> becomes the output vector
+              <strong>b = (7, 5)</strong>.
+            </p>
+          </section>
+        </article>
+      </main>
+    </div>
+  </body>
+</html>

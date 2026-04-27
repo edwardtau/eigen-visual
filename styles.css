@@ -1133,6 +1133,7 @@ input[type="range"]:focus-visible {
   border: 1px solid var(--card-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
+  counter-reset: lesson-step;
 }
 
 .lesson-card section {
@@ -1140,12 +1141,32 @@ input[type="range"]:focus-visible {
   border-radius: var(--radius-md);
   background: var(--control-bg);
   border: 1px solid var(--line);
+  counter-increment: lesson-step;
 }
 
 .lesson-card h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   margin: 0;
   font-family: var(--font-display);
   font-size: 1.25rem;
+}
+
+.lesson-card h2::before {
+  content: counter(lesson-step);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 50%;
+  background: var(--teal);
+  color: white;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
 }
 
 .lesson-card p {
@@ -1262,6 +1283,28 @@ input[type="range"]:focus-visible {
   stroke-width: 3;
   stroke-linecap: round;
   stroke-dasharray: 8 7;
+}
+
+/* Mouseover highlight — Section 1 */
+.hl-trigger {
+  cursor: default;
+  border-radius: 3px;
+  transition: background 0.15s;
+}
+.hl-trigger.is-highlighted {
+  background: color-mix(in srgb, var(--teal) 18%, transparent);
+}
+/* Mouseover highlight — thicker stroke + bright white halo */
+line[data-highlight].is-highlighted {
+  stroke-width: 7;
+  filter:
+    drop-shadow(0 0 2px rgba(255,255,255,1))
+    drop-shadow(0 0 7px rgba(255,255,255,0.85))
+    brightness(1.6);
+}
+
+text[data-highlight].is-highlighted {
+  filter: brightness(1.5) drop-shadow(0 0 4px rgba(255,255,255,0.9));
 }
 
 .transform-diagram text {
@@ -1453,8 +1496,13 @@ input[type="range"]:focus-visible {
 
 .example-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: 1fr 220px;
   align-items: center;
+  gap: 1.1rem;
+}
+
+.example-math-col {
+  display: grid;
   gap: 1.1rem;
 }
 

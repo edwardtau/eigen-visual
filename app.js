@@ -56,8 +56,7 @@ const state = {
   activePreset: presets[0].id,
   motionMode: "matrix-morph",
   scheme: "earthy",
-  showReferenceClock: false,
-  showTransformedClock: false,
+  showClockLabels: false,
   isPlaying: false,
   dragPointerId: null,
   dragTarget: null,
@@ -78,8 +77,7 @@ const elements = {
   progressValue: document.getElementById("progressValue"),
   schemeSelect: document.getElementById("schemeSelect"),
   identityButton: document.getElementById("identityButton"),
-  showReferenceClock: document.getElementById("showReferenceClock"),
-  showTransformedClock: document.getElementById("showTransformedClock"),
+  showClockLabels: document.getElementById("showClockLabels"),
   inputs: {
     a: document.getElementById("input-a"),
     b: document.getElementById("input-b"),
@@ -190,13 +188,8 @@ function wireEvents() {
     });
   });
 
-  elements.showReferenceClock.addEventListener("change", (event) => {
-    state.showReferenceClock = event.target.checked;
-    updateAll();
-  });
-
-  elements.showTransformedClock.addEventListener("change", (event) => {
-    state.showTransformedClock = event.target.checked;
+  elements.showClockLabels.addEventListener("change", (event) => {
+    state.showClockLabels = event.target.checked;
     updateAll();
   });
 
@@ -448,8 +441,7 @@ function syncInputsFromState() {
   elements.progressSlider.value = String(Math.round(state.progress * 100));
   elements.progressValue.textContent = `${Math.round(state.progress * 100)}%`;
   elements.schemeSelect.value = state.scheme;
-  elements.showReferenceClock.checked = state.showReferenceClock;
-  elements.showTransformedClock.checked = state.showTransformedClock;
+  elements.showClockLabels.checked = state.showClockLabels;
 }
 
 function applyScheme(scheme) {
@@ -592,15 +584,12 @@ function renderScene() {
     axisWidth: 2.5,
   });
 
-  if (state.showReferenceClock) {
+  if (state.showClockLabels) {
     drawClockNumbers({ a: 1, b: 0, c: 0, d: 1 }, {
       fill: theme.clockReferenceFill,
       halo: theme.clockReferenceHalo,
       transformGlyphs: false,
     });
-  }
-
-  if (state.showTransformedClock) {
     drawClockNumbers(currentMatrix, {
       fill: theme.clockTransformFill,
       halo: theme.clockTransformHalo,

@@ -1375,6 +1375,14 @@ text[data-highlight].is-highlighted {
   font-weight: 700;
 }
 
+.plane-grid-lines--transformed line {
+  stroke: var(--transform-grid-line);
+}
+
+.diagram-axis--transformed {
+  stroke: var(--transform-grid-axis);
+}
+
 .column-plane rect,
 .axb-plane rect {
   fill: rgba(255, 255, 255, 0.18);

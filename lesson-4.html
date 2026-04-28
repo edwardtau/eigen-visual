@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lesson 4: Complex Eigenvectors | Eigen Explorer</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <script>
+      (function () {
+        var s = localStorage.getItem("eigen-scheme");
+        if (s) {
+          document.body.dataset.scheme = s;
+          document.documentElement.style.colorScheme =
+            s === "dark" || s === "halloween" ? "dark" : "light";
+        }
+      })();
+    </script>
+    <div class="page-shell lesson-shell">
+      <header class="hero lesson-hero">
+        <section class="hero-copy">
+          <p class="eyebrow">Eigen Explorer lesson</p>
+          <h1>Lesson 4: Complex Eigenvectors</h1>
+          <p class="lede">
+            Some matrices have no real eigenvectors at all. Instead of
+            stretching a direction, they rotate the plane — and their
+            eigenvalues are complex numbers. Here is how to read that
+            directly from where <strong>Ae1</strong> and
+            <strong>Ae2</strong> land.
+          </p>
+        </section>
+
+        <nav class="lesson-nav" aria-label="Lesson navigation">
+          <a class="text-link" href="index.html">Back to explorer</a>
+        </nav>
+      </header>
+
+      <main class="lesson-layout">
+        <article class="lesson-card">
+
+          <!-- Section 1: The discriminant condition -->
+          <section>
+            <h2>The discriminant decides</h2>
+            <p>
+              Eigenvalues come from the characteristic equation
+              <strong>det(A − λI) = 0</strong>. For a 2×2 matrix this is a
+              quadratic in λ, and the quadratic formula gives:
+            </p>
+            <figure class="transform-figure">
+              <div class="example-layout" style="grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div class="example-math-col">
+                  <div class="example-work" style="justify-self: stretch;">
+                    <span>Characteristic equation</span>
+                    <strong>λ² − tr(A)·λ + det(A) = 0</strong>
+                  </div>
+                  <div class="example-work" style="justify-self: stretch; margin-top: 0.6rem;">
+                    <span>Discriminant</span>
+                    <strong>Δ = tr(A)² − 4·det(A)</strong>
+                  </div>
+                  <div class="example-work" style="justify-self: stretch; margin-top: 0.6rem;">
+                    <span>Complex eigenvalues when</span>
+                    <strong>Δ &lt; 0</strong>
+                    <strong style="font-size:0.95rem; font-family: var(--font-ui); font-weight: 600;">tr(A)² &lt; 4·det(A)</strong>
+                  </div>
+                </div>
+                <div class="example-math-col">
+                  <div class="example-work" style="justify-self: stretch;">
+                    <span>tr(A) = a + d</span>
+                    <strong style="font-size:0.95rem; font-family: var(--font-ui);">sum of diagonal entries</strong>
+                    <strong style="font-size:0.95rem; font-family: var(--font-ui);">"along-axis" landing weight</strong>
+                  </div>
+                  <div class="example-work" style="justify-self: stretch; margin-top: 0.6rem;">
+                    <span>det(A) = ad − bc</span>
+                    <strong style="font-size:0.95rem; font-family: var(--font-ui);">signed area of landing parallelogram</strong>
+                    <strong style="font-size:0.95rem; font-family: var(--font-ui);">measures total "spread"</strong>
+                  </div>
+                </div>
+              </div>
+              <figcaption>
+                When the landing parallelogram is large relative to the
+                diagonal sum, rotation dominates and eigenvalues go complex.
+              </figcaption>
+            </figure>
+            <p>
+              In geometric terms: complex eigenvalues arise when the
+              transformation <strong>rotates more than it stretches along
+              any fixed direction</strong>, so no real vector stays on its
+              own line after the map is applied.
+            </p>
+          </section>
+
+          <!-- Section 2: Pure rotation -->
+          <section>
+            <h2>Case 1 — Pure rotation</h2>
+            <figure class="transform-figure">
+              <svg
+                class="transform-diagram basis-diagram"
+                viewBox="0 0 680 240"
+                role="img"
+                aria-labelledby="rotDiagramTitle"
+              >
+                <title id="rotDiagramTitle">Pure rotation: Ae1 and Ae2 wrap the plane</title>
+                <defs>
+                  <clipPath id="rotRefClip"><rect width="210" height="210" /></clipPath>
+                  <clipPath id="rotLandClip"><rect width="210" height="210" /></clipPath>
+                  <marker id="rotArrowTeal" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                    <path d="M 0 0 L 9 4.5 L 0 9 z" />
+                  </marker>
+                  <marker id="rotArrowSky" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                    <path d="M 0 0 L 9 4.5 L 0 9 z" />
+                  </marker>
+                </defs>
+
+                <!-- Before: reference frame -->
+                <g class="basis-panel" transform="translate(50 15)">
+                  <rect width="210" height="210" />
+                  <g class="plane-grid-lines">
+                    <line x1="37" y1="0" x2="37" y2="210" />
+                    <line x1="173" y1="0" x2="173" y2="210" />
+                    <line x1="0" y1="37" x2="210" y2="37" />
+                    <line x1="0" y1="173" x2="210" y2="173" />
+                  </g>
+                  <line class="diagram-axis" x1="0" y1="105" x2="210" y2="105" />
+                  <line class="diagram-axis" x1="105" y1="210" x2="105" y2="0" />
+                  <!-- e1 = (1,0), 68px scale -->
+                  <line class="basis-vector basis-vector--e1" x1="105" y1="105" x2="173" y2="105"
+                    marker-end="url(#rotArrowTeal)" />
+                  <!-- e2 = (0,1) -->
+                  <line class="basis-vector basis-vector--e2" x1="105" y1="105" x2="105" y2="37"
+                    marker-end="url(#rotArrowSky)" />
+                  <text x="178" y="124" class="transform-diagram" style="fill:var(--basis-e1);font-size:13px;font-weight:700;">e1</text>
+                  <text x="114" y="41" class="transform-diagram" style="fill:var(--basis-e2);font-size:13px;font-weight:700;">e2</text>
+                  <text class="diagram-caption" x="105" y="232">before A</text>
+                </g>
+
+                <!-- Arrow -->
+                <g class="basis-map">
+                  <path d="M 296 118 C 330 84, 362 84, 396 118" />
+                  <text x="346" y="80">60°</text>
+                </g>
+
+                <!-- After: 60° rotation -->
+                <!-- Ae1=(cos60,sin60)=(0.5,0.866) → SVG from (105,105): (+34,−59)→(139,46) -->
+                <!-- Ae2=(−sin60,cos60)=(−0.866,0.5) → SVG from (105,105): (−59,−34)→(46,71) -->
+                <g class="basis-panel basis-panel--landing" transform="translate(420 15)">
+                  <rect width="210" height="210" />
+                  <g transform="matrix(0.5,-0.866,0.866,0.5,-36.3,78.3)" clip-path="url(#rotLandClip)">
+                    <g class="plane-grid-lines plane-grid-lines--transformed">
+                      <line x1="37" y1="0" x2="37" y2="210" />
+                      <line x1="173" y1="0" x2="173" y2="210" />
+                      <line x1="0" y1="37" x2="210" y2="37" />
+                      <line x1="0" y1="173" x2="210" y2="173" />
+                    </g>
+                    <line class="diagram-axis diagram-axis--transformed" x1="0" y1="105" x2="210" y2="105" />
+                    <line class="diagram-axis diagram-axis--transformed" x1="105" y1="210" x2="105" y2="0" />
+                  </g>
+                  <g class="plane-grid-lines">
+                    <line x1="37" y1="0" x2="37" y2="210" />
+                    <line x1="173" y1="0" x2="173" y2="210" />
+                    <line x1="0" y1="37" x2="210" y2="37" />
+                    <line x1="0" y1="173" x2="210" y2="173" />
+                  </g>
+                  <line class="diagram-axis" x1="0" y1="105" x2="210" y2="105" />
+                  <line class="diagram-axis" x1="105" y1="210" x2="105" y2="0" />
+                  <line class="basis-vector basis-vector--e1" x1="105" y1="105" x2="139" y2="46"
+                    marker-end="url(#rotArrowTeal)" />
+                  <line class="basis-vector basis-vector--e2" x1="105" y1="105" x2="46" y2="71"
+                    marker-end="url(#rotArrowSky)" />
+                  <text x="143" y="42" style="fill:var(--basis-e1);font-size:13px;font-weight:700;font-family:var(--font-ui);">Ae1</text>
+                  <text x="14" y="67" style="fill:var(--basis-e2);font-size:13px;font-weight:700;font-family:var(--font-ui);">Ae2</text>
+                  <text class="diagram-caption" x="105" y="232">after A (60° rotation)</text>
+                </g>
+              </svg>
+              <figcaption>
+                Rotation matrix with θ = 60°: <strong>tr = 2 cos 60° = 1</strong>,
+                <strong>det = 1</strong>. Discriminant Δ = 1 − 4 = <strong>−3 &lt; 0</strong>.
+                Ae1 lifts off the x-axis; Ae2 pulls left of the y-axis. No real vector
+                lands back on its own line — eigenvalues are complex.
+              </figcaption>
+            </figure>
+            <p>
+              For any rotation by angle θ ≠ 0° or 180°, the discriminant is
+              <strong>4cos²θ − 4 &lt; 0</strong>. The eigenvalues are
+              <strong>cos θ ± i sin θ</strong> — a complex conjugate pair
+              sitting on the unit circle in the complex plane.
+            </p>
+          </section>
+
+          <!-- Section 3: Rotation + scale (spiral) -->
+          <section>
+            <h2>Case 2 — Rotation + scale (spiral)</h2>
+            <figure class="transform-figure">
+              <svg
+                class="transform-diagram basis-diagram"
+                viewBox="0 0 680 240"
+                role="img"
+                aria-labelledby="spiralDiagramTitle"
+              >
+                <title id="spiralDiagramTitle">Spiral: rotation combined with scaling</title>
+                <defs>
+                  <clipPath id="spiralRefClip"><rect width="210" height="210" /></clipPath>
+                  <clipPath id="spiralLandClip"><rect width="210" height="210" /></clipPath>
+                  <marker id="spiralArrowTeal" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                    <path d="M 0 0 L 9 4.5 L 0 9 z" />
+                  </marker>
+                  <marker id="spiralArrowSky" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                    <path d="M 0 0 L 9 4.5 L 0 9 z" />
+                  </marker>
+                </defs>
+
+                <g class="basis-panel" transform="translate(50 15)">
+                  <rect width="210" height="210" />
+                  <g class="plane-grid-lines">
+                    <line x1="37" y1="0" x2="37" y2="210" />
+                    <line x1="173" y1="0" x2="173" y2="210" />
+                    <line x1="0" y1="37" x2="210" y2="37" />
+                    <line x1="0" y1="173" x2="210" y2="173" />
+                  </g>
+                  <line class="diagram-axis" x1="0" y1="105" x2="210" y2="105" />
+                  <line class="diagram-axis" x1="105" y1="210" x2="105" y2="0" />
+                  <line class="basis-vector basis-vector--e1" x1="105" y1="105" x2="173" y2="105"
+                    marker-end="url(#spiralArrowTeal)" />
+                  <line class="basis-vector basis-vector--e2" x1="105" y1="105" x2="105" y2="37"
+                    marker-end="url(#spiralArrowSky)" />
+                  <text x="178" y="124" style="fill:var(--basis-e1);font-size:13px;font-weight:700;font-family:var(--font-ui);">e1</text>
+                  <text x="114" y="41" style="fill:var(--basis-e2);font-size:13px;font-weight:700;font-family:var(--font-ui);">e2</text>
+                  <text class="diagram-caption" x="105" y="232">before A</text>
+                </g>
+
+                <g class="basis-map">
+                  <path d="M 296 118 C 330 84, 362 84, 396 118" />
+                  <text x="336" y="76">r·rot θ</text>
+                </g>
+
+                <!-- r=1.3, θ=50°: Ae1=(1.3cos50°,1.3sin50°)=(0.836,0.996) -->
+                <!-- SVG from (105,105): (+57,−68)→(162,37) -->
+                <!-- Ae2=(−1.3sin50°,1.3cos50°)=(−0.996,0.836) -->
+                <!-- SVG from (105,105): (−68,−57)→(37,48) -->
+                <g class="basis-panel basis-panel--landing" transform="translate(420 15)">
+                  <rect width="210" height="210" />
+                  <!-- transformed grid: r·rotation matrix -->
+                  <g transform="matrix(0.836,-0.996,0.996,0.836,-72.0,36.5)" clip-path="url(#spiralLandClip)">
+                    <g class="plane-grid-lines plane-grid-lines--transformed">
+                      <line x1="37" y1="0" x2="37" y2="210" />
+                      <line x1="173" y1="0" x2="173" y2="210" />
+                      <line x1="0" y1="37" x2="210" y2="37" />
+                      <line x1="0" y1="173" x2="210" y2="173" />
+                    </g>
+                    <line class="diagram-axis diagram-axis--transformed" x1="0" y1="105" x2="210" y2="105" />
+                    <line class="diagram-axis diagram-axis--transformed" x1="105" y1="210" x2="105" y2="0" />
+                  </g>
+                  <g class="plane-grid-lines">
+                    <line x1="37" y1="0" x2="37" y2="210" />
+                    <line x1="173" y1="0" x2="173" y2="210" />
+                    <line x1="0" y1="37" x2="210" y2="37" />
+                    <line x1="0" y1="173" x2="210" y2="173" />
+                  </g>
+                  <line class="diagram-axis" x1="0" y1="105" x2="210" y2="105" />
+                  <line class="diagram-axis" x1="105" y1="210" x2="105" y2="0" />
+                  <line class="basis-vector basis-vector--e1" x1="105" y1="105" x2="162" y2="37"
+                    marker-end="url(#spiralArrowTeal)" />
+                  <line class="basis-vector basis-vector--e2" x1="105" y1="105" x2="37" y2="48"
+                    marker-end="url(#spiralArrowSky)" />
+                  <text x="165" y="33" style="fill:var(--basis-e1);font-size:13px;font-weight:700;font-family:var(--font-ui);">Ae1</text>
+                  <text x="6" y="44" style="fill:var(--basis-e2);font-size:13px;font-weight:700;font-family:var(--font-ui);">Ae2</text>
+                  <text class="diagram-caption" x="105" y="232">after A (spiral-out)</text>
+                </g>
+              </svg>
+              <figcaption>
+                Scale r = 1.3, rotation θ = 50°: <strong>tr = 2r cos θ</strong>,
+                <strong>det = r²</strong>. Discriminant Δ = 4r²cos²θ − 4r² =
+                <strong>4r²(cos²θ − 1) &lt; 0</strong> for any θ ≠ 0°, 180°.
+                Eigenvalues are <strong>r(cos θ ± i sin θ)</strong> — complex, magnitude r.
+              </figcaption>
+            </figure>
+            <p>
+              Multiplying a rotation by a scalar r doesn't change whether eigenvalues
+              are complex — only the magnitude. If r &gt; 1, vectors spiral outward
+              under repeated application. If r &lt; 1, they spiral inward. Either way,
+              <strong>no real eigenvector exists</strong>.
+            </p>
+          </section>
+
+          <!-- Section 4: Off-diagonal antisymmetry -->
+          <section>
+            <h2>Case 3 — Off-diagonal antisymmetry</h2>
+            <figure class="transform-figure">
+              <svg
+                class="transform-diagram basis-diagram"
+                viewBox="0 0 680 240"
+                role="img"
+                aria-labelledby="shearDiagramTitle"
+              >
+                <title id="shearDiagramTitle">Antisymmetric shear with complex eigenvalues</title>
+                <defs>
+                  <clipPath id="shearRefClip"><rect width="210" height="210" /></clipPath>
+                  <clipPath id="shearLandClip"><rect width="210" height="210" /></clipPath>
+                  <marker id="shearArrowTeal" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                    <path d="M 0 0 L 9 4.5 L 0 9 z" />
+                  </marker>
+                  <marker id="shearArrowSky" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                    <path d="M 0 0 L 9 4.5 L 0 9 z" />
+                  </marker>
+                </defs>
+
+                <g class="basis-panel" transform="translate(50 15)">
+                  <rect width="210" height="210" />
+                  <g class="plane-grid-lines">
+                    <line x1="37" y1="0" x2="37" y2="210" />
+                    <line x1="173" y1="0" x2="173" y2="210" />
+                    <line x1="0" y1="37" x2="210" y2="37" />
+                    <line x1="0" y1="173" x2="210" y2="173" />
+                  </g>
+                  <line class="diagram-axis" x1="0" y1="105" x2="210" y2="105" />
+                  <line class="diagram-axis" x1="105" y1="210" x2="105" y2="0" />
+                  <line class="basis-vector basis-vector--e1" x1="105" y1="105" x2="173" y2="105"
+                    marker-end="url(#shearArrowTeal)" />
+                  <line class="basis-vector basis-vector--e2" x1="105" y1="105" x2="105" y2="37"
+                    marker-end="url(#shearArrowSky)" />
+                  <text x="178" y="124" style="fill:var(--basis-e1);font-size:13px;font-weight:700;font-family:var(--font-ui);">e1</text>
+                  <text x="114" y="41" style="fill:var(--basis-e2);font-size:13px;font-weight:700;font-family:var(--font-ui);">e2</text>
+                  <text class="diagram-caption" x="105" y="232">before A</text>
+                </g>
+
+                <g class="basis-map">
+                  <path d="M 296 118 C 330 84, 362 84, 396 118" />
+                  <text x="346" y="80">A</text>
+                </g>
+
+                <!-- A = [[1,−1],[1,1]]: Ae1=(1,1), Ae2=(−1,1) -->
+                <!-- Ae1 SVG: (105+68, 105−68) = (173, 37) -->
+                <!-- Ae2 SVG: (105−68, 105−68) = (37, 37) -->
+                <g class="basis-panel basis-panel--landing" transform="translate(420 15)">
+                  <rect width="210" height="210" />
+                  <g transform="matrix(1,-1,1,1,-105,105)" clip-path="url(#shearLandClip)">
+                    <g class="plane-grid-lines plane-grid-lines--transformed">
+                      <line x1="37" y1="0" x2="37" y2="210" />
+                      <line x1="173" y1="0" x2="173" y2="210" />
+                      <line x1="0" y1="37" x2="210" y2="37" />
+                      <line x1="0" y1="173" x2="210" y2="173" />
+                    </g>
+                    <line class="diagram-axis diagram-axis--transformed" x1="0" y1="105" x2="210" y2="105" />
+                    <line class="diagram-axis diagram-axis--transformed" x1="105" y1="210" x2="105" y2="0" />
+                  </g>
+                  <g class="plane-grid-lines">
+                    <line x1="37" y1="0" x2="37" y2="210" />
+                    <line x1="173" y1="0" x2="173" y2="210" />
+                    <line x1="0" y1="37" x2="210" y2="37" />
+                    <line x1="0" y1="173" x2="210" y2="173" />
+                  </g>
+                  <line class="diagram-axis" x1="0" y1="105" x2="210" y2="105" />
+                  <line class="diagram-axis" x1="105" y1="210" x2="105" y2="0" />
+                  <line class="basis-vector basis-vector--e1" x1="105" y1="105" x2="173" y2="37"
+                    marker-end="url(#shearArrowTeal)" />
+                  <line class="basis-vector basis-vector--e2" x1="105" y1="105" x2="37" y2="37"
+                    marker-end="url(#shearArrowSky)" />
+                  <text x="177" y="33" style="fill:var(--basis-e1);font-size:13px;font-weight:700;font-family:var(--font-ui);">Ae1</text>
+                  <text x="6" y="33" style="fill:var(--basis-e2);font-size:13px;font-weight:700;font-family:var(--font-ui);">Ae2</text>
+                  <text class="diagram-caption" x="105" y="232">after A = [[1,−1],[1,1]]</text>
+                </g>
+              </svg>
+              <figcaption>
+                A = [[1, −1], [1, 1]]: <strong>tr = 2</strong>,
+                <strong>det = 2</strong>. Discriminant Δ = 4 − 8 =
+                <strong>−4 &lt; 0</strong>. Eigenvalues are
+                <strong>1 ± i</strong>. Ae1 lifts upward; Ae2 pulls leftward —
+                classic antisymmetric pattern.
+              </figcaption>
+            </figure>
+            <p>
+              The key signal is the <strong>off-diagonal sign pattern</strong>.
+              In the matrix <strong>A = [[a, b], [c, d]]</strong>, look at
+              <em>b</em> and <em>c</em>:
+            </p>
+            <figure class="transform-figure">
+              <div class="example-layout" style="grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div class="example-math-col">
+                  <div class="example-work" style="justify-self: stretch;">
+                    <span>Complex eigenvalues — typical sign pattern</span>
+                    <strong>c &gt; 0 and b &lt; 0 (or vice versa)</strong>
+                    <strong style="font-family:var(--font-ui);font-size:0.9rem;">Ae1 lifts off x-axis, Ae2 pulls off y-axis</strong>
+                    <strong style="font-family:var(--font-ui);font-size:0.9rem;">the plane wraps around the origin</strong>
+                  </div>
+                </div>
+                <div class="example-math-col">
+                  <div class="example-work" style="justify-self: stretch;">
+                    <span>Real eigenvalues — typical sign pattern</span>
+                    <strong>b and c have the same sign</strong>
+                    <strong style="font-family:var(--font-ui);font-size:0.9rem;">Ae1 and Ae2 pull in the same rotational sense</strong>
+                    <strong style="font-family:var(--font-ui);font-size:0.9rem;">real stretching directions exist</strong>
+                  </div>
+                </div>
+              </div>
+              <figcaption>
+                The off-diagonal entries b and c control how much the
+                transformation "crosses" axes. Opposite signs create
+                rotational circulation; matching signs allow real eigenvectors.
+              </figcaption>
+            </figure>
+          </section>
+
+          <!-- Section 5: Summary -->
+          <section class="lesson-summary">
+            <h2>Reading complexity from the landing vectors</h2>
+            <figure class="transform-figure">
+              <div class="example-math-col" style="gap: 0.7rem; display: grid;">
+                <div class="example-work" style="justify-self: stretch;">
+                  <span>Step 1 — compute trace and determinant</span>
+                  <strong>tr(A) = (x-component of Ae1) + (y-component of Ae2)</strong>
+                  <strong>det(A) = signed area of the Ae1–Ae2 parallelogram</strong>
+                </div>
+                <div class="example-work" style="justify-self: stretch;">
+                  <span>Step 2 — check the discriminant</span>
+                  <strong>Δ = tr² − 4·det</strong>
+                  <strong style="font-family:var(--font-ui);font-size:0.9rem;">Δ &lt; 0 → complex eigenvalues, λ = α ± βi</strong>
+                  <strong style="font-family:var(--font-ui);font-size:0.9rem;">Δ ≥ 0 → real eigenvalues</strong>
+                </div>
+                <div class="example-work" style="justify-self: stretch;">
+                  <span>Step 3 — find the eigenvalues</span>
+                  <strong>α = tr(A) / 2 (real part)</strong>
+                  <strong>β = √|Δ| / 2 (imaginary part = "angular speed")</strong>
+                  <strong style="font-family:var(--font-ui);font-size:0.9rem;">|λ| = √det(A) = the scaling factor of the spiral</strong>
+                </div>
+              </div>
+              <figcaption>
+                The imaginary part β measures how fast the transformation
+                rotates. The magnitude |λ| = √det(A) tells you whether
+                orbits spiral in (|λ| &lt; 1), stay on a circle (|λ| = 1),
+                or spiral out (|λ| &gt; 1).
+              </figcaption>
+            </figure>
+            <p>
+              The geometric tell: if <strong>Ae1 has a large upward
+              component</strong> and <strong>Ae2 has a large leftward
+              component</strong> (or the mirror), the transformation is
+              hiding a rotation — and the discriminant will be negative.
+            </p>
+          </section>
+
+        </article>
+      </main>
+    </div>
+  </body>
+</html>

@@ -103,10 +103,9 @@ const elements = {
 };
 
 function init() {
+  const savedScheme = localStorage.getItem("eigen-scheme");
   const defaultScheme = elements.schemeSelect.querySelector("option[selected]")?.value;
-  if (defaultScheme) {
-    state.scheme = defaultScheme;
-  }
+  state.scheme = savedScheme || defaultScheme || state.scheme;
   applyScheme(state.scheme);
   renderPresetButtons();
   syncInputsFromState();
@@ -167,6 +166,7 @@ function wireEvents() {
 
   elements.schemeSelect.addEventListener("change", (event) => {
     state.scheme = event.target.value;
+    localStorage.setItem("eigen-scheme", state.scheme);
     applyScheme(state.scheme);
     updateAll();
   });

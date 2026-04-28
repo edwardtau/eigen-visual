@@ -8,6 +8,16 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <script>
+      (function () {
+        var s = localStorage.getItem("eigen-scheme");
+        if (s) {
+          document.body.dataset.scheme = s;
+          document.documentElement.style.colorScheme =
+            s === "dark" || s === "halloween" ? "dark" : "light";
+        }
+      })();
+    </script>
     <div class="page-shell lesson-shell">
       <header class="hero lesson-hero">
         <section class="hero-copy">

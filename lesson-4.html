@@ -401,6 +401,149 @@
             </figure>
           </section>
 
+          <!-- Section 6: Concrete example -->
+          <section>
+            <h2>A concrete example</h2>
+            <p>
+              Work through every step with
+              <strong>A = [[1, −2], [2, 1]]</strong>. Column 1 is Ae1, column 2 is Ae2.
+            </p>
+
+            <figure class="transform-figure">
+              <div class="example-layout">
+                <div class="example-math-col">
+
+                  <!-- Step 1 -->
+                  <div class="example-work" style="justify-self: stretch;">
+                    <span>Step 1 — read tr and det from the landing vectors</span>
+                    <strong>Ae1 = (1, 2) &nbsp; Ae2 = (−2, 1)</strong>
+                    <strong>tr(A) = 1 + 1 = 2</strong>
+                    <strong>det(A) = (1)(1) − (−2)(2) = 1 + 4 = 5</strong>
+                  </div>
+
+                  <!-- Step 2 -->
+                  <div class="example-work" style="justify-self: stretch;">
+                    <span>Step 2 — discriminant</span>
+                    <strong>Δ = tr² − 4·det = 4 − 20 = −16</strong>
+                    <strong style="font-family:var(--font-ui);font-size:0.9rem;">Δ &lt; 0 → complex eigenvalues confirmed</strong>
+                  </div>
+
+                  <!-- Step 3 -->
+                  <div class="example-work" style="justify-self: stretch;">
+                    <span>Step 3 — eigenvalues</span>
+                    <strong>λ = (tr ± √Δ) / 2 = (2 ± √−16) / 2</strong>
+                    <strong>λ = 1 ± 2i</strong>
+                    <strong style="font-family:var(--font-ui);font-size:0.9rem;">real part α = 1, imaginary part β = 2</strong>
+                    <strong style="font-family:var(--font-ui);font-size:0.9rem;">|λ| = √det = √5 ≈ 2.24 → spiral out</strong>
+                  </div>
+
+                </div>
+
+                <!-- SVG: landing vectors for this matrix -->
+                <svg
+                  class="example-plane-diagram"
+                  viewBox="0 0 220 220"
+                  role="img"
+                  aria-labelledby="exampleComplexTitle"
+                  style="max-width: 220px;"
+                >
+                  <title id="exampleComplexTitle">Ae1 and Ae2 for A = [[1,−2],[2,1]]</title>
+                  <defs>
+                    <marker id="exArrowTeal" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                      <path d="M 0 0 L 9 4.5 L 0 9 z" style="fill:var(--basis-e1)" />
+                    </marker>
+                    <marker id="exArrowSky" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                      <path d="M 0 0 L 9 4.5 L 0 9 z" style="fill:var(--basis-e2)" />
+                    </marker>
+                  </defs>
+                  <g transform="translate(10 10)">
+                    <rect width="200" height="200" style="fill:rgba(255,255,255,0.12);stroke:var(--reference-grid-axis);stroke-width:1.4;" />
+                    <!-- grid at 40px per unit: lines at 60 (center−40), 100 (center), 140 (center+40) -->
+                    <g class="plane-grid-lines">
+                      <line x1="60" y1="0" x2="60" y2="200" />
+                      <line x1="140" y1="0" x2="140" y2="200" />
+                      <line x1="0" y1="60" x2="200" y2="60" />
+                      <line x1="0" y1="140" x2="200" y2="140" />
+                    </g>
+                    <line class="diagram-axis" x1="0" y1="100" x2="200" y2="100" />
+                    <line class="diagram-axis" x1="100" y1="200" x2="100" y2="0" />
+                    <!-- Ae1 = (1,2), 40px/unit → SVG (100+40, 100−80) = (140, 20) -->
+                    <line stroke="var(--basis-e1)" stroke-width="4" stroke-linecap="round"
+                      x1="100" y1="100" x2="140" y2="20" marker-end="url(#exArrowTeal)" />
+                    <!-- Ae2 = (−2,1), 40px/unit → SVG (100−80, 100−40) = (20, 60) -->
+                    <line stroke="var(--basis-e2)" stroke-width="4" stroke-linecap="round"
+                      x1="100" y1="100" x2="20" y2="60" marker-end="url(#exArrowSky)" />
+                    <!-- e1 reference (gray dashed) -->
+                    <line stroke="var(--reference-grid-axis)" stroke-width="2" stroke-dasharray="5 4"
+                      x1="100" y1="100" x2="140" y2="100" />
+                    <!-- e2 reference (gray dashed) -->
+                    <line stroke="var(--reference-grid-axis)" stroke-width="2" stroke-dasharray="5 4"
+                      x1="100" y1="100" x2="100" y2="60" />
+                    <text style="fill:var(--basis-e1);font-family:var(--font-ui);font-size:13px;font-weight:700;" x="144" y="18">Ae1</text>
+                    <text style="fill:var(--basis-e2);font-family:var(--font-ui);font-size:13px;font-weight:700;" x="4" y="56">Ae2</text>
+                    <text style="fill:var(--muted);font-family:var(--font-ui);font-size:11px;" x="142" y="112">e1</text>
+                    <text style="fill:var(--muted);font-family:var(--font-ui);font-size:11px;" x="104" y="54">e2</text>
+                    <text class="diagram-caption" style="text-anchor:middle;" x="100" y="218">A = [[1,−2],[2,1]]</text>
+                  </g>
+                </svg>
+              </div>
+              <figcaption>
+                Ae1 lifts sharply upward (c = 2 &gt; 0); Ae2 pulls left (b = −2 &lt; 0).
+                Opposite signs in b and c — rotational pattern — force Δ &lt; 0.
+              </figcaption>
+            </figure>
+
+            <!-- Eigenvector derivation -->
+            <p>
+              Now find the <strong>eigenvectors</strong>. For each eigenvalue, solve
+              <strong>(A − λI)v = 0</strong>.
+            </p>
+            <figure class="transform-figure">
+              <div class="example-math-col" style="gap: 0.7rem; display: grid;">
+
+                <div class="example-work" style="justify-self: stretch;">
+                  <span>For λ = 1 + 2i — form (A − λI)</span>
+                  <strong>A − (1+2i)I = [[1−(1+2i), −2], [2, 1−(1+2i)]]</strong>
+                  <strong>= [[−2i, −2], [2, −2i]]</strong>
+                </div>
+
+                <div class="example-work" style="justify-self: stretch;">
+                  <span>Solve the first row: −2i·v₁ − 2·v₂ = 0</span>
+                  <strong>v₂ = −i·v₁</strong>
+                  <strong>Set v₁ = 1 → eigenvector = (1, −i)</strong>
+                </div>
+
+                <div class="example-work" style="justify-self: stretch;">
+                  <span>Verify: A·(1, −i)</span>
+                  <strong>row 1: 1·1 + (−2)·(−i) = 1 + 2i ✓</strong>
+                  <strong>row 2: 2·1 + 1·(−i) = 2 − i ✓</strong>
+                  <strong style="font-family:var(--font-ui);font-size:0.9rem;">(1+2i)·(1, −i) = (1+2i, −i+2) = (1+2i, 2−i) ✓</strong>
+                </div>
+
+                <div class="example-work" style="justify-self: stretch;">
+                  <span>For λ = 1 − 2i — conjugate eigenvector</span>
+                  <strong>eigenvector = (1, +i)</strong>
+                  <strong style="font-family:var(--font-ui);font-size:0.9rem;">Complex eigenvalues of real matrices always come in conjugate pairs —
+                    so do their eigenvectors.</strong>
+                </div>
+
+              </div>
+              <figcaption>
+                The eigenvectors are complex: <strong>(1, −i)</strong> and <strong>(1, i)</strong>.
+                There is no real direction the transformation leaves invariant — every
+                real vector gets rotated, so no real eigenvector exists.
+              </figcaption>
+            </figure>
+
+            <p>
+              The real and imaginary parts of the eigenvector,
+              <strong>Re = (1, 0)</strong> and <strong>Im = (0, −1)</strong>, span
+              the invariant plane in which the spiral lives. Repeated application of
+              A rotates within that plane by arctan(β/α) = arctan(2) ≈ 63° and
+              scales by |λ| = √5 ≈ 2.24 each step.
+            </p>
+          </section>
+
           <!-- Section 5: Summary -->
           <section class="lesson-summary">
             <h2>Reading complexity from the landing vectors</h2>

@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lesson 2: Trace, Determinant, and Eigenvalues | Eigen Explorer</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <script>
+      (function () {
+        var s = localStorage.getItem("eigen-scheme");
+        if (s) {
+          document.body.dataset.scheme = s;
+          document.documentElement.style.colorScheme =
+            s === "dark" || s === "halloween" ? "dark" : "light";
+        }
+      })();
+    </script>
+    <div class="page-shell lesson-shell">
+      <header class="hero lesson-hero">
+        <section class="hero-copy">
+          <p class="eyebrow">Eigen Explorer lesson</p>
+          <h1>Lesson 2: The Eigenvalue Recipe</h1>
+          <p class="lede">
+            For a 2&times;2 matrix, trace, determinant, and discriminant give a
+            compact way to calculate eigenvalues and predict what kind of
+            transformation you are seeing.
+          </p>
+        </section>
+
+        <nav class="lesson-nav" aria-label="Lesson navigation">
+          <a class="text-link" href="index.html">Back to explorer</a>
+        </nav>
+      </header>
+
+      <main class="lesson-layout">
+        <article class="lesson-card">
+          <section>
+            <h2>Start with a 2&times;2 matrix</h2>
+            <p>
+              Write the matrix entries with letters first. This keeps the
+              calculation pattern visible before numbers get involved.
+            </p>
+            <figure class="transform-figure">
+              <div class="lesson-formula-row">
+                <span class="example-matrix-label">A =</span>
+                <table class="matrix matrix--two-by-two" aria-label="A generic 2 by 2 matrix">
+                  <tr>
+                    <td>a</td>
+                    <td>b</td>
+                  </tr>
+                  <tr>
+                    <td>c</td>
+                    <td>d</td>
+                  </tr>
+                </table>
+              </div>
+              <figcaption>
+                Everything in this lesson assumes a real 2&times;2 matrix.
+              </figcaption>
+            </figure>
+            <div class="formula-grid">
+              <article class="formula-card">
+                <h3>Trace</h3>
+                <p class="formula">tr(A) = a + d</p>
+                <p>The trace is the sum of the diagonal entries.</p>
+              </article>
+              <article class="formula-card">
+                <h3>Determinant</h3>
+                <p class="formula">det(A) = ad - bc</p>
+                <p>The determinant is the signed area scale factor.</p>
+              </article>
+            </div>
+          </section>
+
+          <section>
+            <h2>Build the characteristic equation</h2>
+            <p>
+              Eigenvalues are the values of <strong>&lambda;</strong> where
+              <strong>A - &lambda;I</strong> collapses some nonzero direction.
+              Algebraically, that means:
+            </p>
+            <div class="lesson-equation-block">
+              det(A - &lambda;I) = 0
+            </div>
+            <p>
+              For a 2&times;2 matrix, that determinant always simplifies to:
+            </p>
+            <div class="lesson-equation-block">
+              &lambda;<sup>2</sup> - tr(A)&lambda; + det(A) = 0
+            </div>
+            <ol class="calculation-steps">
+              <li>Find the trace: add the diagonal entries.</li>
+              <li>Find the determinant: multiply diagonal entries, then subtract the off-diagonal product.</li>
+              <li>Plug those two numbers into the quadratic equation above.</li>
+            </ol>
+          </section>
+
+          <section>
+            <h2>Use the discriminant</h2>
+            <p>
+              The discriminant tells you what kind of eigenvalues the quadratic
+              has before you even solve it.
+            </p>
+            <div class="lesson-equation-block">
+              &Delta; = tr(A)<sup>2</sup> - 4 det(A)
+            </div>
+            <div class="formula-grid formula-grid--three">
+              <article class="formula-card">
+                <h3>&Delta; &gt; 0</h3>
+                <p>Two distinct real eigenvalues.</p>
+                <p>Geometrically, there are two real eigen-directions.</p>
+              </article>
+              <article class="formula-card">
+                <h3>&Delta; = 0</h3>
+                <p>One repeated real eigenvalue.</p>
+                <p>The matrix may have one eigen-direction or a whole plane of them.</p>
+              </article>
+              <article class="formula-card">
+                <h3>&Delta; &lt; 0</h3>
+                <p>Complex conjugate eigenvalues.</p>
+                <p>For a real plane visualization, this usually means rotation is involved.</p>
+              </article>
+            </div>
+          </section>
+
+          <section>
+            <h2>Solve for eigenvalues</h2>
+            <p>
+              Once you have trace and determinant, use the quadratic formula:
+            </p>
+            <div class="lesson-equation-block">
+              &lambda; = (tr(A) &plusmn; &radic;&Delta;) / 2
+            </div>
+            <p>
+              Each eigenvalue is a scale factor. If <strong>&lambda; = 3</strong>,
+              vectors on that eigen-direction triple in length. If
+              <strong>&lambda; = -2</strong>, they double and flip through the
+              origin.
+            </p>
+          </section>
+
+          <section>
+            <h2>Find eigenvectors</h2>
+            <p>
+              For each eigenvalue, plug it into <strong>A - &lambda;I</strong>
+              and solve:
+            </p>
+            <div class="lesson-equation-block">
+              (A - &lambda;I)v = 0
+            </div>
+            <ol class="calculation-steps">
+              <li>Choose one eigenvalue.</li>
+              <li>Subtract it from the diagonal entries of A.</li>
+              <li>Solve the resulting homogeneous system for a nonzero vector v.</li>
+              <li>Any nonzero multiple of v is also an eigenvector.</li>
+            </ol>
+          </section>
+
+          <section class="lesson-summary">
+            <h2>Worked example</h2>
+            <p>
+              Use the same matrix from Lesson 1, then calculate its eigenvalues.
+            </p>
+            <figure class="transform-figure">
+              <div class="lesson-worked-example">
+                <div class="lesson-formula-row">
+                  <span class="example-matrix-label">A =</span>
+                  <table class="matrix matrix--two-by-two" aria-label="Example matrix A">
+                    <tr>
+                      <td>2</td>
+                      <td>1</td>
+                    </tr>
+                    <tr>
+                      <td>1</td>
+                      <td>2</td>
+                    </tr>
+                  </table>
+                </div>
+                <div class="example-work">
+                  <span>trace and determinant</span>
+                  <strong>tr(A) = 2 + 2 = 4</strong>
+                  <strong>det(A) = 2&times;2 - 1&times;1 = 3</strong>
+                </div>
+                <div class="example-work">
+                  <span>characteristic equation</span>
+                  <strong>&lambda;<sup>2</sup> - 4&lambda; + 3 = 0</strong>
+                  <strong>(&lambda; - 1)(&lambda; - 3) = 0</strong>
+                </div>
+                <div class="example-work">
+                  <span>eigenvalues</span>
+                  <strong>&lambda;<sub>1</sub> = 3</strong>
+                  <strong>&lambda;<sub>2</sub> = 1</strong>
+                </div>
+              </div>
+              <figcaption>
+                The trace is 4, so the eigenvalues add to 4. The determinant is
+                3, so the eigenvalues multiply to 3.
+              </figcaption>
+            </figure>
+            <p>
+              To find directions, solve <strong>(A - 3I)v = 0</strong> and
+              <strong>(A - I)v = 0</strong>. The first gives direction
+              <strong>(1, 1)</strong>; the second gives direction
+              <strong>(1, -1)</strong>.
+            </p>
+          </section>
+
+          <section>
+            <h2>Quick checklist</h2>
+            <ol class="calculation-steps">
+              <li>Compute <strong>tr(A)</strong>.</li>
+              <li>Compute <strong>det(A)</strong>.</li>
+              <li>Compute <strong>&Delta; = tr(A)<sup>2</sup> - 4det(A)</strong>.</li>
+              <li>Use <strong>&lambda; = (tr(A) &plusmn; &radic;&Delta;) / 2</strong>.</li>
+              <li>For each eigenvalue, solve <strong>(A - &lambda;I)v = 0</strong>.</li>
+              <li>Interpret eigenvalues as stretching/flipping factors along eigenvector directions.</li>
+            </ol>
+          </section>
+        </article>
+      </main>
+    </div>
+  </body>
+</html>

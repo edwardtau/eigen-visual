@@ -1100,6 +1100,25 @@ input[type="range"]:focus-visible {
   text-decoration: underline;
 }
 
+.lesson-cta {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 1.1rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--coral) 0%, var(--primary-end) 100%);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.lesson-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(22, 37, 51, 0.16);
+}
+
 .lesson-shell {
   max-width: 980px;
 }

@@ -312,6 +312,13 @@
               under repeated application. If r &lt; 1, they spiral inward. Either way,
               <strong>no real eigenvector exists</strong>.
             </p>
+            <p>
+              In explorer language, every real probe keeps some
+              <strong>span drift</strong> or <strong>off-span slip</strong>.
+              The transformed vector never settles exactly onto its original
+              span, so there is no real along-probe scale that can serve as
+              <strong>&lambda;</strong>.
+            </p>
           </section>
 
           <!-- Section 4: Off-diagonal antisymmetry -->
@@ -613,7 +620,8 @@
               component</strong> and <strong>Ae2 has a large leftward
               component</strong> (or the mirror), the transformation may be
               hiding a rotation. Compute the discriminant to confirm whether
-              real eigenvectors disappear.
+              real eigenvectors disappear. When they do, no real probe can make
+              both span drift and off-span slip vanish.
             </p>
           </section>
 

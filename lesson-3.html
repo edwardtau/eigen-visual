@@ -108,6 +108,29 @@
               itself. In the explorer, this is the direction where the
               transformed vector sits exactly on top of the dashed probe line.
             </p>
+            <div class="formula-grid formula-grid--three">
+              <article class="formula-card">
+                <h3>Span drift</h3>
+                <p>The angle between <strong>v</strong> and <strong>Av</strong>.</p>
+                <p>It is zero when the transformed vector does not turn away from the span.</p>
+              </article>
+              <article class="formula-card">
+                <h3>Off-span slip</h3>
+                <p>The distance from <strong>Av</strong> to the line spanned by <strong>v</strong>.</p>
+                <p>It is zero when the transformed vector lands back on that line.</p>
+              </article>
+              <article class="formula-card">
+                <h3>Along-probe scale</h3>
+                <p>The signed stretch of <strong>Av</strong> along <strong>v</strong>.</p>
+                <p>When drift and slip are zero, this value is the eigenvalue <strong>&lambda;</strong>.</p>
+              </article>
+            </div>
+            <p>
+              So the visual test is simple: a real eigenvector has
+              <strong>span drift = 0</strong> and
+              <strong>off-span slip = 0</strong>. Its along-probe scale is the
+              matching eigenvalue.
+            </p>
             <figure class="transform-figure">
               <svg
                 class="transform-diagram real-eigen-diagram"

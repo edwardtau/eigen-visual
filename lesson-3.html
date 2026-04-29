@@ -19,6 +19,31 @@
       })();
     </script>
     <div class="page-shell lesson-shell">
+      <div class="site-layout">
+        <aside class="lesson-panel" aria-label="Lessons">
+          <a class="lesson-panel__home" href="index.html">Eigen Explorer</a>
+          <p class="lesson-panel__title">Lessons</p>
+          <nav class="lesson-panel__nav">
+            <a class="lesson-panel__link" href="lesson-1.html">
+              <span>Lesson 1</span>
+              <strong>The Basics</strong>
+            </a>
+            <a class="lesson-panel__link" href="lesson-2.html">
+              <span>Lesson 2</span>
+              <strong>Trace &amp; Determinant</strong>
+            </a>
+            <a class="lesson-panel__link" href="lesson-3.html" aria-current="page">
+              <span>Lesson 3</span>
+              <strong>Real Eigenvectors</strong>
+            </a>
+            <a class="lesson-panel__link" href="lesson-4.html">
+              <span>Lesson 4</span>
+              <strong>Complex Eigenvalues</strong>
+            </a>
+          </nav>
+        </aside>
+
+        <div class="site-main">
       <header class="hero lesson-hero">
         <section class="hero-copy">
           <p class="eyebrow">Eigen Explorer lesson</p>
@@ -30,13 +55,19 @@
           </p>
         </section>
 
-        <nav class="lesson-nav" aria-label="Lesson navigation">
-          <a class="text-link" href="index.html">Back to explorer</a>
-        </nav>
       </header>
 
       <main class="lesson-layout">
         <article class="lesson-card">
+          <div class="lesson-outcomes">
+            <h2>After this lesson, you can</h2>
+            <ul>
+              <li>Recognize a real eigenvector as a direction that does not turn.</li>
+              <li>Use <strong>(A - &lambda;I)v = 0</strong> to find real eigenvector directions.</li>
+              <li>Check an eigenvector by verifying <strong>Av = &lambda;v</strong>.</li>
+            </ul>
+          </div>
+
           <section>
             <h2>What real eigenvectors mean</h2>
             <p>
@@ -46,6 +77,9 @@
             </p>
             <div class="lesson-equation-block">
               Av = &lambda;v
+            </div>
+            <div class="lesson-equation-block">
+              Real eigenvector test: <strong>Av</strong> and <strong>v</strong> are parallel.
             </div>
             <div class="formula-grid formula-grid--three">
               <article class="formula-card">
@@ -286,8 +320,16 @@
               </article>
             </div>
           </section>
+
+          <nav class="lesson-pager" aria-label="Lesson sequence">
+            <a class="text-link" href="lesson-2.html">Previous: Lesson 2, eigenvalue recipe</a>
+            <a class="text-link" href="index.html">Back to explorer</a>
+            <a class="text-link" href="lesson-4.html">Next: Lesson 4, complex eigenvalues</a>
+          </nav>
         </article>
       </main>
+        </div>
+      </div>
     </div>
   </body>
 </html>

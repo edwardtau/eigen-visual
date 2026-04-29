@@ -353,6 +353,7 @@ body[data-scheme="rainbow"] .page-shell {
 
 body[data-scheme="rainbow"] .hero-copy,
 body[data-scheme="rainbow"] .hero-metrics,
+body[data-scheme="rainbow"] .lesson-panel,
 body[data-scheme="rainbow"] .stage-card,
 body[data-scheme="rainbow"] .panel,
 body[data-scheme="rainbow"] .note-card {
@@ -450,9 +451,108 @@ canvas {
 
 .page-shell {
   position: relative;
-  max-width: 1320px;
+  max-width: 1560px;
   margin: 0 auto;
   padding: 1rem;
+}
+
+.site-layout {
+  display: grid;
+  grid-template-columns: minmax(210px, 240px) minmax(0, 1fr);
+  align-items: start;
+  gap: 0.85rem;
+}
+
+.site-main {
+  min-width: 0;
+}
+
+.lesson-panel {
+  position: sticky;
+  top: 1rem;
+  display: grid;
+  gap: 0.85rem;
+  padding: 0.9rem;
+  background: var(--panel);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+  animation: rise-in 0.7s ease both;
+}
+
+.lesson-panel__home {
+  display: inline-flex;
+  width: fit-content;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.lesson-panel__home:hover {
+  color: var(--teal);
+}
+
+.lesson-panel__title {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lesson-panel__nav {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.lesson-panel__link {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+  padding: 0.72rem 0.78rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--control-bg);
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease,
+    border-color 140ms ease,
+    background-color 140ms ease;
+}
+
+.lesson-panel__link span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lesson-panel__link strong {
+  font-size: 0.9rem;
+  line-height: 1.18;
+}
+
+.lesson-panel__link:hover {
+  transform: translateY(-1px);
+  border-color: rgba(36, 121, 111, 0.35);
+  box-shadow: 0 8px 20px rgba(22, 37, 51, 0.1);
+}
+
+.lesson-panel__link[aria-current="page"] {
+  background: linear-gradient(135deg, var(--active-chip-start) 0%, var(--active-chip-end) 100%);
+  color: white;
+}
+
+.lesson-panel__link[aria-current="page"] span {
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .hero {
@@ -1136,11 +1236,11 @@ input[type="range"]:focus-visible {
 }
 
 .lesson-shell {
-  max-width: 980px;
+  max-width: 1240px;
 }
 
 .lesson-hero {
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   align-items: stretch;
 }
 
@@ -1714,6 +1814,48 @@ text[data-highlight].is-highlighted {
     linear-gradient(135deg, var(--sky-soft), var(--teal-soft));
 }
 
+.lesson-outcomes {
+  padding: 0.95rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(135deg, var(--sky-soft), var(--teal-soft));
+}
+
+.lesson-outcomes h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+}
+
+.lesson-outcomes h2::before {
+  content: none;
+}
+
+.lesson-outcomes ul {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.7rem 0 0;
+  padding-left: 1.25rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.lesson-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--control-bg);
+}
+
+.lesson-pager .text-link {
+  margin-top: 0;
+}
+
 .lesson-formula-row {
   display: flex;
   align-items: center;
@@ -1874,6 +2016,18 @@ text[data-highlight].is-highlighted {
 }
 
 @media (max-width: 1120px) {
+  .site-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .lesson-panel {
+    position: static;
+  }
+
+  .lesson-panel__nav {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
   .hero,
   .app-layout,
   .lesson-hero,
@@ -1903,6 +2057,7 @@ text[data-highlight].is-highlighted {
 
   .hero-copy,
   .hero-metrics,
+  .lesson-panel,
   .stage-card,
   .panel,
   .lesson-nav,
@@ -1913,6 +2068,7 @@ text[data-highlight].is-highlighted {
 
   .hero-metrics,
   .sidebar,
+  .lesson-panel__nav,
   .readings-grid {
     grid-template-columns: 1fr;
   }
@@ -1938,6 +2094,11 @@ text[data-highlight].is-highlighted {
 
   .formula-grid {
     grid-template-columns: 1fr;
+  }
+
+  .lesson-pager {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .lesson-equation-block {

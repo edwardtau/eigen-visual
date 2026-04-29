@@ -19,6 +19,31 @@
       })();
     </script>
     <div class="page-shell lesson-shell">
+      <div class="site-layout">
+        <aside class="lesson-panel" aria-label="Lessons">
+          <a class="lesson-panel__home" href="index.html">Eigen Explorer</a>
+          <p class="lesson-panel__title">Lessons</p>
+          <nav class="lesson-panel__nav">
+            <a class="lesson-panel__link" href="lesson-1.html">
+              <span>Lesson 1</span>
+              <strong>The Basics</strong>
+            </a>
+            <a class="lesson-panel__link" href="lesson-2.html" aria-current="page">
+              <span>Lesson 2</span>
+              <strong>Trace &amp; Determinant</strong>
+            </a>
+            <a class="lesson-panel__link" href="lesson-3.html">
+              <span>Lesson 3</span>
+              <strong>Real Eigenvectors</strong>
+            </a>
+            <a class="lesson-panel__link" href="lesson-4.html">
+              <span>Lesson 4</span>
+              <strong>Complex Eigenvalues</strong>
+            </a>
+          </nav>
+        </aside>
+
+        <div class="site-main">
       <header class="hero lesson-hero">
         <section class="hero-copy">
           <p class="eyebrow">Eigen Explorer lesson</p>
@@ -30,13 +55,19 @@
           </p>
         </section>
 
-        <nav class="lesson-nav" aria-label="Lesson navigation">
-          <a class="text-link" href="index.html">Back to explorer</a>
-        </nav>
       </header>
 
       <main class="lesson-layout">
         <article class="lesson-card">
+          <div class="lesson-outcomes">
+            <h2>After this lesson, you can</h2>
+            <ul>
+              <li>Compute trace, determinant, and discriminant for a 2&times;2 matrix.</li>
+              <li>Build the characteristic equation for a 2&times;2 matrix.</li>
+              <li>Use the discriminant to predict real or complex eigenvalues.</li>
+            </ul>
+          </div>
+
           <section>
             <h2>Start with a 2&times;2 matrix</h2>
             <p>
@@ -91,6 +122,26 @@
             <div class="lesson-equation-block">
               &lambda;<sup>2</sup> - tr(A)&lambda; + det(A) = 0
             </div>
+            <div class="formula-grid">
+              <article class="formula-card">
+                <h3>Expand the determinant</h3>
+                <p class="formula">(a - &lambda;)(d - &lambda;) - bc = 0</p>
+                <p>
+                  The diagonal entries of <strong>A - &lambda;I</strong> are
+                  <strong>a - &lambda;</strong> and
+                  <strong>d - &lambda;</strong>.
+                </p>
+              </article>
+              <article class="formula-card">
+                <h3>Collect terms</h3>
+                <p class="formula">&lambda;<sup>2</sup> - (a + d)&lambda; + (ad - bc) = 0</p>
+                <p>
+                  Since <strong>a + d = tr(A)</strong> and
+                  <strong>ad - bc = det(A)</strong>, this becomes the compact
+                  trace-determinant formula.
+                </p>
+              </article>
+            </div>
             <ol class="calculation-steps">
               <li>Find the trace: add the diagonal entries.</li>
               <li>Find the determinant: multiply diagonal entries, then subtract the off-diagonal product.</li>
@@ -143,20 +194,19 @@
           </section>
 
           <section>
-            <h2>Find eigenvectors</h2>
+            <h2>Preview eigenvectors</h2>
             <p>
-              For each eigenvalue, plug it into <strong>A - &lambda;I</strong>
-              and solve:
+              Eigenvalues tell you the scale factors. The next question is:
+              which directions use those scale factors? That is where
+              eigenvectors enter.
             </p>
             <div class="lesson-equation-block">
               (A - &lambda;I)v = 0
             </div>
-            <ol class="calculation-steps">
-              <li>Choose one eigenvalue.</li>
-              <li>Subtract it from the diagonal entries of A.</li>
-              <li>Solve the resulting homogeneous system for a nonzero vector v.</li>
-              <li>Any nonzero multiple of v is also an eigenvector.</li>
-            </ol>
+            <p>
+              If an eigenvalue is real, Lesson 3 will show how to plug it into
+              this equation and solve for a real eigenvector direction.
+            </p>
           </section>
 
           <section class="lesson-summary">
@@ -215,12 +265,20 @@
               <li>Compute <strong>det(A)</strong>.</li>
               <li>Compute <strong>&Delta; = tr(A)<sup>2</sup> - 4det(A)</strong>.</li>
               <li>Use <strong>&lambda; = (tr(A) &plusmn; &radic;&Delta;) / 2</strong>.</li>
-              <li>For each eigenvalue, solve <strong>(A - &lambda;I)v = 0</strong>.</li>
-              <li>Interpret eigenvalues as stretching/flipping factors along eigenvector directions.</li>
+              <li>Interpret eigenvalues as stretching or flipping factors.</li>
+              <li>Take real eigenvalues to Lesson 3 to find their directions.</li>
             </ol>
           </section>
+
+          <nav class="lesson-pager" aria-label="Lesson sequence">
+            <a class="text-link" href="lesson-1.html">Previous: Lesson 1, basics</a>
+            <a class="text-link" href="index.html">Back to explorer</a>
+            <a class="text-link" href="lesson-3.html">Next: Lesson 3, real eigenvectors</a>
+          </nav>
         </article>
       </main>
+        </div>
+      </div>
     </div>
   </body>
 </html>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lesson 4: Complex Eigenvectors | Eigen Explorer</title>
+    <title>Lesson 4: Complex Eigenvalues and No Real Eigenvectors | Eigen Explorer</title>
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -19,26 +19,57 @@
       })();
     </script>
     <div class="page-shell lesson-shell">
+      <div class="site-layout">
+        <aside class="lesson-panel" aria-label="Lessons">
+          <a class="lesson-panel__home" href="index.html">Eigen Explorer</a>
+          <p class="lesson-panel__title">Lessons</p>
+          <nav class="lesson-panel__nav">
+            <a class="lesson-panel__link" href="lesson-1.html">
+              <span>Lesson 1</span>
+              <strong>The Basics</strong>
+            </a>
+            <a class="lesson-panel__link" href="lesson-2.html">
+              <span>Lesson 2</span>
+              <strong>Trace &amp; Determinant</strong>
+            </a>
+            <a class="lesson-panel__link" href="lesson-3.html">
+              <span>Lesson 3</span>
+              <strong>Real Eigenvectors</strong>
+            </a>
+            <a class="lesson-panel__link" href="lesson-4.html" aria-current="page">
+              <span>Lesson 4</span>
+              <strong>Complex Eigenvalues</strong>
+            </a>
+          </nav>
+        </aside>
+
+        <div class="site-main">
       <header class="hero lesson-hero">
         <section class="hero-copy">
           <p class="eyebrow">Eigen Explorer lesson</p>
-          <h1>Lesson 4: Complex Eigenvectors</h1>
+          <h1>Lesson 4: Complex Eigenvalues</h1>
           <p class="lede">
             Some matrices have no real eigenvectors at all. Instead of
             stretching a direction, they rotate the plane — and their
-            eigenvalues are complex numbers. Here is how to read that
-            directly from where <strong>Ae1</strong> and
+            eigenvalues are complex numbers. This lesson explains how to spot
+            that "no real eigenvector" case from the discriminant and from
+            where <strong>Ae1</strong> and
             <strong>Ae2</strong> land.
           </p>
         </section>
 
-        <nav class="lesson-nav" aria-label="Lesson navigation">
-          <a class="text-link" href="index.html">Back to explorer</a>
-        </nav>
       </header>
 
       <main class="lesson-layout">
         <article class="lesson-card">
+          <div class="lesson-outcomes">
+            <h2>After this lesson, you can</h2>
+            <ul>
+              <li>Use <strong>&Delta; &lt; 0</strong> to identify matrices with no real eigenvectors.</li>
+              <li>Interpret complex eigenvalues as rotation combined with scaling.</li>
+              <li>Connect rotational basis-vector landing patterns to the discriminant test.</li>
+            </ul>
+          </div>
 
           <!-- Section 1: The discriminant condition -->
           <section>
@@ -365,38 +396,41 @@
                 A = [[1, −1], [1, 1]]: <strong>tr = 2</strong>,
                 <strong>det = 2</strong>. Discriminant Δ = 4 − 8 =
                 <strong>−4 &lt; 0</strong>. Eigenvalues are
-                <strong>1 ± i</strong>. Ae1 lifts upward; Ae2 pulls leftward —
+                <strong>1 ± i</strong>. Ae1 lifts upward; Ae2 pulls leftward:
                 classic antisymmetric pattern.
               </figcaption>
             </figure>
             <p>
-              The key signal is the <strong>off-diagonal sign pattern</strong>.
-              In the matrix <strong>A = [[a, b], [c, d]]</strong>, look at
-              <em>b</em> and <em>c</em>:
+              A useful visual clue is the
+              <strong>off-diagonal sign pattern</strong>. In the matrix
+              <strong>A = [[a, b], [c, d]]</strong>, look at <em>b</em> and
+              <em>c</em>. This clue suggests rotation, but the
+              <strong>discriminant is still the deciding test</strong>.
             </p>
             <figure class="transform-figure">
               <div class="example-layout" style="grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                 <div class="example-math-col">
                   <div class="example-work" style="justify-self: stretch;">
-                    <span>Complex eigenvalues — typical sign pattern</span>
+                    <span>Often complex: rotational sign pattern</span>
                     <strong>c &gt; 0 and b &lt; 0 (or vice versa)</strong>
                     <strong style="font-family:var(--font-ui);font-size:0.9rem;">Ae1 lifts off x-axis, Ae2 pulls off y-axis</strong>
-                    <strong style="font-family:var(--font-ui);font-size:0.9rem;">the plane wraps around the origin</strong>
+                    <strong style="font-family:var(--font-ui);font-size:0.9rem;">check Δ to confirm no real eigenvectors</strong>
                   </div>
                 </div>
                 <div class="example-math-col">
                   <div class="example-work" style="justify-self: stretch;">
-                    <span>Real eigenvalues — typical sign pattern</span>
+                    <span>Often real: stretching sign pattern</span>
                     <strong>b and c have the same sign</strong>
                     <strong style="font-family:var(--font-ui);font-size:0.9rem;">Ae1 and Ae2 pull in the same rotational sense</strong>
-                    <strong style="font-family:var(--font-ui);font-size:0.9rem;">real stretching directions exist</strong>
+                    <strong style="font-family:var(--font-ui);font-size:0.9rem;">check Δ to confirm real eigenvalues</strong>
                   </div>
                 </div>
               </div>
               <figcaption>
                 The off-diagonal entries b and c control how much the
-                transformation "crosses" axes. Opposite signs create
-                rotational circulation; matching signs allow real eigenvectors.
+                transformation "crosses" axes. Opposite signs can create
+                rotational circulation, but <strong>&Delta; = tr(A)<sup>2</sup> - 4det(A)</strong>
+                is what actually decides whether real eigenvectors exist.
               </figcaption>
             </figure>
           </section>
@@ -577,13 +611,20 @@
             <p>
               The geometric tell: if <strong>Ae1 has a large upward
               component</strong> and <strong>Ae2 has a large leftward
-              component</strong> (or the mirror), the transformation is
-              hiding a rotation — and the discriminant will be negative.
+              component</strong> (or the mirror), the transformation may be
+              hiding a rotation. Compute the discriminant to confirm whether
+              real eigenvectors disappear.
             </p>
           </section>
 
+          <nav class="lesson-pager" aria-label="Lesson sequence">
+            <a class="text-link" href="lesson-3.html">Previous: Lesson 3, real eigenvectors</a>
+            <a class="text-link" href="index.html">Back to explorer</a>
+          </nav>
         </article>
       </main>
+        </div>
+      </div>
     </div>
   </body>
 </html>

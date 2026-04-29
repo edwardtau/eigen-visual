@@ -9,6 +9,31 @@
   </head>
   <body>
     <div class="page-shell">
+      <div class="site-layout">
+        <aside class="lesson-panel" aria-label="Lessons">
+          <a class="lesson-panel__home" href="index.html">Eigen Explorer</a>
+          <p class="lesson-panel__title">Lessons</p>
+          <nav class="lesson-panel__nav">
+            <a class="lesson-panel__link" href="lesson-1.html">
+              <span>Lesson 1</span>
+              <strong>The Basics</strong>
+            </a>
+            <a class="lesson-panel__link" href="lesson-2.html">
+              <span>Lesson 2</span>
+              <strong>Trace &amp; Determinant</strong>
+            </a>
+            <a class="lesson-panel__link" href="lesson-3.html">
+              <span>Lesson 3</span>
+              <strong>Real Eigenvectors</strong>
+            </a>
+            <a class="lesson-panel__link" href="lesson-4.html">
+              <span>Lesson 4</span>
+              <strong>Complex Eigenvalues</strong>
+            </a>
+          </nav>
+        </aside>
+
+        <div class="site-main">
       <header class="hero">
         <section class="hero-copy">
           <p class="eyebrow">
@@ -19,12 +44,6 @@
             Deform the plane, drag a probe vector, and look for the rare directions
             that refuse to turn off their own span.
           </p>
-          <nav class="lesson-nav-row" aria-label="Lessons">
-            <a class="lesson-cta" href="lesson-1.html">Lesson 1: The Basics →</a>
-            <a class="lesson-cta lesson-cta--secondary" href="lesson-2.html">Lesson 2: Trace &amp; Determinant →</a>
-            <a class="lesson-cta lesson-cta--secondary" href="lesson-3.html">Lesson 3: Real Eigenvectors →</a>
-            <a class="lesson-cta lesson-cta--secondary" href="lesson-4.html">Lesson 4: Complex Eigenvectors →</a>
-          </nav>
         </section>
 
         <section class="hero-metrics" aria-label="Matrix summary">
@@ -272,6 +291,8 @@
           </p>
         </article>
       </section>
+        </div>
+      </div>
     </div>
 
     <script src="app.js?v=2" defer></script>

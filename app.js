@@ -827,7 +827,7 @@ function drawEigenlines(eigenData, theme) {
     ctx.restore();
 
     const labelPoint = scale(pair.vector, 4.35);
-    drawTag(labelPoint, `lambda = ${formatNumber(pair.value)}`, theme.eigenTagBg, theme.tagInk);
+    drawTag(labelPoint, `λ = ${formatNumber(pair.value)}`, theme.eigenTagBg, theme.tagInk);
   });
 }
 
@@ -1146,7 +1146,7 @@ function buildEigenDetails(eigenData) {
       <div class="detail-item">
         <h4>Complex pair</h4>
         <p>
-          lambda = ${formatNumber(eigenData.complexRealPart)}
+          &lambda; = ${formatNumber(eigenData.complexRealPart)}
           +/- ${formatNumber(eigenData.complexImagPart)}i
         </p>
       </div>
@@ -1157,7 +1157,7 @@ function buildEigenDetails(eigenData) {
     return `
       <div class="detail-item">
         <h4>Repeated eigenvalue</h4>
-        <p>lambda = ${formatNumber(eigenData.eigenpairs[0].value)} for every non-zero vector.</p>
+        <p>&lambda; = ${formatNumber(eigenData.eigenpairs[0].value)} for every non-zero vector.</p>
       </div>
     `;
   }
@@ -1169,7 +1169,7 @@ function buildEigenDetails(eigenData) {
         <div class="detail-item">
           <h4>Eigenpair ${index + 1}</h4>
           <p>
-            lambda = ${formatNumber(pair.value)},
+            &lambda; = ${formatNumber(pair.value)},
             direction approx (${formatNumber(vector.x)}, ${formatNumber(vector.y)})
           </p>
         </div>
@@ -1235,13 +1235,13 @@ function buildCanvasNote(eigenData, drift) {
 }
 
 function formatCharacteristicPolynomial(trace, det) {
-  const parts = ["p(lambda) = lambda^2"];
+  const parts = ["p(λ) = λ^2"];
   const linearCoefficient = -trace;
   if (Math.abs(linearCoefficient) >= EPSILON) {
     const sign = linearCoefficient >= 0 ? " + " : " - ";
     const magnitude = Math.abs(linearCoefficient);
     const coefficient = Math.abs(magnitude - 1) < EPSILON ? "" : formatNumber(magnitude);
-    parts.push(`${sign}${coefficient}lambda`);
+    parts.push(`${sign}${coefficient}λ`);
   }
 
   if (Math.abs(det) >= EPSILON) {

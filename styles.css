@@ -1797,6 +1797,55 @@ text[data-highlight].is-highlighted {
   font-weight: 700;
 }
 
+.concrete-basis-frame {
+  fill: rgba(255, 255, 255, 0.18);
+  stroke: var(--reference-grid-axis);
+  stroke-width: 1.4;
+}
+
+.concrete-transformed-grid line {
+  stroke: var(--transform-grid-line);
+  stroke-width: 0.022;
+  opacity: 0.68;
+}
+
+.concrete-transformed-axes line {
+  stroke: var(--transform-grid-axis);
+  stroke-width: 0.035;
+}
+
+.concrete-basis-vector {
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.concrete-basis-vector--reference {
+  opacity: 0.55;
+  stroke-width: 3.8;
+}
+
+.concrete-basis-vector--e1 {
+  stroke: var(--basis-e1);
+  marker-end: url(#concreteBasisArrowTeal);
+}
+
+.concrete-basis-vector--e2 {
+  stroke: var(--basis-e2);
+  marker-end: url(#concreteBasisArrowSky);
+}
+
+.concrete-basis-diagram #concreteBasisArrowTeal path {
+  fill: var(--basis-e1);
+}
+
+.concrete-basis-diagram #concreteBasisArrowSky path {
+  fill: var(--basis-e2);
+}
+
+.concrete-basis-diagram .concrete-caption--transformed {
+  fill: var(--teal);
+}
+
 .lesson-card .lesson-equation {
   justify-self: start;
   padding: 0.75rem 1rem;

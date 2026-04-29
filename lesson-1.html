@@ -487,6 +487,114 @@
             <h2>A concrete example</h2>
             <p>Given matrix <strong>A</strong> and vector <strong>x</strong>, multiply to find the output <strong>b</strong>.</p>
             <figure class="transform-figure">
+              <svg
+                class="transform-diagram concrete-basis-diagram"
+                viewBox="0 0 720 320"
+                role="img"
+                aria-labelledby="concreteBasisTitle concreteBasisDescription"
+              >
+                <title id="concreteBasisTitle">Reference plane overlaid with transformed plane</title>
+                <desc id="concreteBasisDescription">
+                  For matrix A equals [[2, 1], [1, 2]], the reference basis
+                  vectors e1 and e2 are overlaid with the transformed grid.
+                  e1 lands at T(e1) = (2, 1), and e2 lands at T(e2) = (1, 2).
+                </desc>
+                <defs>
+                  <clipPath id="concreteBasisClip">
+                    <rect x="70" y="24" width="580" height="250" />
+                  </clipPath>
+                  <marker
+                    id="concreteBasisArrowTeal"
+                    markerWidth="7"
+                    markerHeight="7"
+                    refX="6"
+                    refY="3.5"
+                    orient="auto"
+                  >
+                    <path d="M 0 0 L 7 3.5 L 0 7 z" />
+                  </marker>
+                  <marker
+                    id="concreteBasisArrowSky"
+                    markerWidth="7"
+                    markerHeight="7"
+                    refX="6"
+                    refY="3.5"
+                    orient="auto"
+                  >
+                    <path d="M 0 0 L 7 3.5 L 0 7 z" />
+                  </marker>
+                </defs>
+
+                <rect class="concrete-basis-frame" x="70" y="24" width="580" height="250" />
+                <g clip-path="url(#concreteBasisClip)">
+                  <g class="plane-grid-lines">
+                    <line x1="92" y1="24" x2="92" y2="274" />
+                    <line x1="134" y1="24" x2="134" y2="274" />
+                    <line x1="176" y1="24" x2="176" y2="274" />
+                    <line x1="218" y1="24" x2="218" y2="274" />
+                    <line x1="302" y1="24" x2="302" y2="274" />
+                    <line x1="344" y1="24" x2="344" y2="274" />
+                    <line x1="386" y1="24" x2="386" y2="274" />
+                    <line x1="428" y1="24" x2="428" y2="274" />
+                    <line x1="470" y1="24" x2="470" y2="274" />
+                    <line x1="512" y1="24" x2="512" y2="274" />
+                    <line x1="554" y1="24" x2="554" y2="274" />
+                    <line x1="596" y1="24" x2="596" y2="274" />
+                    <line x1="70" y1="42" x2="650" y2="42" />
+                    <line x1="70" y1="84" x2="650" y2="84" />
+                    <line x1="70" y1="126" x2="650" y2="126" />
+                    <line x1="70" y1="168" x2="650" y2="168" />
+                    <line x1="70" y1="252" x2="650" y2="252" />
+                  </g>
+                  <line class="diagram-axis" x1="70" y1="210" x2="650" y2="210" />
+                  <line class="diagram-axis" x1="260" y1="274" x2="260" y2="24" />
+
+                  <g class="concrete-transformed-grid" transform="matrix(84 -42 42 -84 260 210)">
+                    <line x1="-5" y1="-4" x2="-5" y2="5" />
+                    <line x1="-4" y1="-4" x2="-4" y2="5" />
+                    <line x1="-3" y1="-4" x2="-3" y2="5" />
+                    <line x1="-2" y1="-4" x2="-2" y2="5" />
+                    <line x1="-1" y1="-4" x2="-1" y2="5" />
+                    <line x1="0" y1="-4" x2="0" y2="5" />
+                    <line x1="1" y1="-4" x2="1" y2="5" />
+                    <line x1="2" y1="-4" x2="2" y2="5" />
+                    <line x1="3" y1="-4" x2="3" y2="5" />
+                    <line x1="4" y1="-4" x2="4" y2="5" />
+                    <line x1="-4" y1="-4" x2="5" y2="-4" />
+                    <line x1="-4" y1="-3" x2="5" y2="-3" />
+                    <line x1="-4" y1="-2" x2="5" y2="-2" />
+                    <line x1="-4" y1="-1" x2="5" y2="-1" />
+                    <line x1="-4" y1="0" x2="5" y2="0" />
+                    <line x1="-4" y1="1" x2="5" y2="1" />
+                    <line x1="-4" y1="2" x2="5" y2="2" />
+                    <line x1="-4" y1="3" x2="5" y2="3" />
+                    <line x1="-4" y1="4" x2="5" y2="4" />
+                  </g>
+                  <g class="concrete-transformed-axes" transform="matrix(84 -42 42 -84 260 210)">
+                    <line x1="-4" y1="0" x2="5" y2="0" />
+                    <line x1="0" y1="-4" x2="0" y2="4" />
+                  </g>
+                </g>
+
+                <line class="concrete-basis-vector concrete-basis-vector--e1 concrete-basis-vector--reference" x1="260" y1="210" x2="302" y2="210" />
+                <line class="concrete-basis-vector concrete-basis-vector--e2 concrete-basis-vector--reference" x1="260" y1="210" x2="260" y2="168" />
+                <line class="concrete-basis-vector concrete-basis-vector--e1" x1="260" y1="210" x2="344" y2="168" />
+                <line class="concrete-basis-vector concrete-basis-vector--e2" x1="260" y1="210" x2="302" y2="126" />
+                <text x="304" y="226">e1</text>
+                <text x="228" y="172">e2</text>
+                <text x="354" y="162">T(e1) = (2, 1)</text>
+                <text x="308" y="118">T(e2) = (1, 2)</text>
+                <text class="diagram-caption" x="178" y="300">reference plane</text>
+                <text class="diagram-caption concrete-caption--transformed" x="478" y="300">transformed plane</text>
+              </svg>
+              <figcaption>
+                The transformed plane is drawn over the reference plane. The
+                first column of <strong>A</strong> tells where
+                <strong>e1</strong> lands, and the second column tells where
+                <strong>e2</strong> lands.
+              </figcaption>
+            </figure>
+            <figure class="transform-figure">
               <div class="example-layout">
                 <div class="example-math-col">
                   <div class="example-html-math" aria-label="A numerical matrix multiplication example">
